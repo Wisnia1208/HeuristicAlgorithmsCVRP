@@ -169,6 +169,7 @@ int main() {
 		// Okno GUI
 		ImGui::Begin("Panel Sterowania", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 		ImGui::Text("Hello from ImGui + GLFW!");
+		ImGui::Separator();
 
 		// Dodanie przycisku do randomizacji punktów
 		if (ImGui::Button("Randomizuj punkty")) {
