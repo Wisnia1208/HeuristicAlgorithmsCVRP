@@ -126,6 +126,16 @@ int main() {
 			find_closest_points();
 		}
 
+		// Dodanie pola tekstowego do wprowadzania nazwy pliku
+		static char filename[128] = ""; // Bufor na nazwę pliku
+		ImGui::InputText("Nazwa pliku", filename, IM_ARRAYSIZE(filename));
+
+		// Dodanie przycisku "Load"
+		if (ImGui::Button("Load")) {
+			// Na razie przycisk nie wykonuje żadnej akcji
+			std::cout << "Kliknięto przycisk Load. Wprowadzona nazwa pliku: " << filename << std::endl;
+		}
+
 		ImGui::End();
 
 		// Nowe okno z grafem
