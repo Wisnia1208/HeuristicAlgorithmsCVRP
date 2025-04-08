@@ -8,12 +8,69 @@
 #include <ctime>   // std::time
 #include <vector>  // std::vector
 #include <cmath>   // std::sqrt, std::pow
+#include <string>
 
 #define GRID_SIZE 75.0f // Rozmiar pojedynczego kwadratu w pikselach
 #define GRID_COUNT 10 // Liczba kwadratów w wierszu/kolumnie
 
 float scalePoint(const float point) {
 	return point * GRID_SIZE / GRID_COUNT;
+}
+
+void DrawGridWithLabels(ImDrawList* draw_list, const ImVec2& cursorScreenPos, float grid_size, int grid_count) {
+	ImU32 grid_color = IM_COL32(200, 200, 200, 255); // Kolor siatki
+
+	// Rysowanie siatki
+	for (int i = 0; i <= grid_count; i++) {
+		// Linie poziome
+		float y = cursorScreenPos.y + i * grid_size;
+		draw_list->AddLine(ImVec2(cursorScreenPos.x, y), ImVec2(cursorScreenPos.x + grid_count * grid_size, y), grid_color);
+
+		// Linie pionowe
+		float x = cursorScreenPos.x + i * grid_size;
+		draw_list->AddLine(ImVec2(x, cursorScreenPos.y), ImVec2(x, cursorScreenPos.y + grid_count * grid_size), grid_color);
+	}
+
+	// Dodanie opisu osi X
+	for (int i = 0; i <= grid_count; i++) {
+		float x = cursorScreenPos.x + i * grid_size;
+		std::string label = std::to_string(i * 10); // Wartości od 0 do 100
+
+		// Wyśrodkowanie tekstu względem siatki
+		ImVec2 text_size = ImGui::CalcTextSize(label.c_str());
+		draw_list->AddText(ImVec2(x - text_size.x / 2, cursorScreenPos.y + grid_count * grid_size + 5), IM_COL32(255, 255, 255, 255), label.c_str());
+	}
+
+	// Dodanie opisu osi Y
+	for (int i = 0; i <= grid_count; i++) {
+		float y = cursorScreenPos.y + (grid_count - i) * grid_size;
+		std::string label = std::to_string(i * 10); // Wartości od 0 do 100
+
+		// Wyśrodkowanie tekstu względem siatki i wyrównanie do prawej
+		ImVec2 text_size = ImGui::CalcTextSize(label.c_str());
+		draw_list->AddText(ImVec2(cursorScreenPos.x - text_size.x - 5, y - text_size.y / 2), IM_COL32(255, 255, 255, 255), label.c_str());
+	}
+
+	// Dodanie opisu "Axis X" poniżej osi X, wyśrodkowanego względem siatki
+	ImVec2 axis_x_label_pos = ImVec2(cursorScreenPos.x + grid_count * grid_size / 2 - ImGui::CalcTextSize("Axis X").x / 2, cursorScreenPos.y + grid_count * grid_size + 20);
+	draw_list->AddText(axis_x_label_pos, IM_COL32(255, 255, 255, 255), "Axis X");
+
+	// Dodanie opisu "Axis Y" obok osi Y, przesuniętego bardziej w lewo
+	ImVec2 axis_y_label_pos = ImVec2(cursorScreenPos.x - 75, cursorScreenPos.y + grid_count * grid_size / 2 - ImGui::CalcTextSize("Axis Y").y / 2);
+	draw_list->AddText(axis_y_label_pos, IM_COL32(255, 255, 255, 255), "Axis Y");
+}
+
+void DrawPoints(ImDrawList* draw_list, const ImVec2& cursorScreenPos, const std::vector<ImVec2>& points) {
+	ImU32 point_color = IM_COL32(255, 0, 0, 255); // Kolor punktów (czerwony)
+	float point_radius = 5.0f; // Promień punktu
+	for (const auto& point : points) {
+		draw_list->AddCircleFilled(
+			ImVec2(cursorScreenPos.x + scalePoint(point.x),
+				cursorScreenPos.y + GRID_SIZE * GRID_COUNT - scalePoint(point.y)),
+			point_radius,
+			point_color
+		);
+	}
 }
 
 void DrawLineBetweenPoints(ImDrawList* draw_list, const ImVec2& offset, const ImVec2& point1, const ImVec2& point2, ImU32 color, float thickness = 2.0f) {
@@ -37,7 +94,7 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Tworzenie okna
-	GLFWwindow* window = glfwCreateWindow(1900, 1000, "ImGui + GLFW", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(1900, 1000, "Experiment GUI", nullptr, nullptr);
 	if (!window) { glfwTerminate(); return -1; }
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1); // vsync
@@ -110,15 +167,15 @@ int main() {
 		ImGui::NewFrame();
 
 		// Okno GUI
-		ImGui::Begin("Moje Okienko");
+		ImGui::Begin("Panel Sterowania", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 		ImGui::Text("Hello from ImGui + GLFW!");
 
 		// Dodanie przycisku do randomizacji punktów
 		if (ImGui::Button("Randomizuj punkty")) {
 			randomize_points();
-			for (const auto& point : points) {
-				std::cout << "Point: (" << point.x << ", " << point.y << ")" << std::endl; // Debugowanie			
-			}
+			//for (const auto& point : points) {
+			//	std::cout << "Point: (" << point.x << ", " << point.y << ")" << std::endl; // Debugowanie			
+			//}
 		}
 
 		// Dodanie przycisku do znajdowania najbliższych punktów
@@ -138,30 +195,17 @@ int main() {
 
 		ImGui::End();
 
+		ImGui::SetNextWindowSize(ImVec2(850, 825));
 		// Nowe okno z grafem
-		ImGui::Begin("Graf 100x100");
+		ImGui::Begin("Graf 100x100", nullptr, ImGuiWindowFlags_NoResize);
 		ImDrawList* draw_list = ImGui::GetWindowDrawList();
 		ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos(); // Pozycja początkowa
-		ImU32 grid_color = IM_COL32(200, 200, 200, 255); // Kolor siatki
-
-		// Rysowanie siatki
-		for (int i = 0; i <= grid_count; i++) {
-			// Linie poziome
-			float y = cursorScreenPos.y + i * grid_size;
-			draw_list->AddLine(ImVec2(cursorScreenPos.x, y), ImVec2(cursorScreenPos.x + grid_count * grid_size, y), grid_color);
-
-			// Linie pionowe
-			float x = cursorScreenPos.x + i * grid_size;
-			draw_list->AddLine(ImVec2(x, cursorScreenPos.y), ImVec2(x, cursorScreenPos.y + grid_count * grid_size), grid_color);
-		}
-
-		// Rysowanie czerwonych punktów
-		ImU32 point_color = IM_COL32(255, 0, 0, 255); // Kolor punktów (czerwony)
-		float point_radius = 5.0f; // Promień punktu
-		for (const auto& point : points) {
-			draw_list->AddCircleFilled(ImVec2(cursorScreenPos.x + scalePoint(point.x), cursorScreenPos.y + GRID_SIZE * GRID_COUNT - scalePoint(point.y)), point_radius, point_color);
-		}
-
+		cursorScreenPos.x += 75; // Przesunięcie w prawo
+        
+		DrawGridWithLabels(draw_list, cursorScreenPos, grid_size, grid_count); // Rysowanie siatki
+		
+		DrawPoints(draw_list, cursorScreenPos, points); // Rysowanie punktów na siatce
+		
 		// W głównej pętli:
 		if (has_closest_points) {
 			ImU32 line_color = IM_COL32(0, 255, 0, 255); // Kolor linii (zielony)
