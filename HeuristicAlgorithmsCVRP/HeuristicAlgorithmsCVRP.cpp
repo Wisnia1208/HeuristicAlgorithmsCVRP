@@ -2,6 +2,8 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include "Experiment.h"
+
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <cstdlib> // std::rand, std::srand
@@ -9,6 +11,7 @@
 #include <vector>  // std::vector
 #include <cmath>   // std::sqrt, std::pow
 #include <string>
+#include <filesystem> // Wymagane dla std::filesystem
 
 #define GRID_SIZE 75.0f // Rozmiar pojedynczego kwadratu w pikselach
 #define GRID_COUNT 10 // Liczba kwadratów w wierszu/kolumnie
@@ -60,13 +63,13 @@ void DrawGridWithLabels(ImDrawList* draw_list, const ImVec2& cursorScreenPos, fl
 	draw_list->AddText(axis_y_label_pos, IM_COL32(255, 255, 255, 255), "Axis Y");
 }
 
-void DrawPoints(ImDrawList* draw_list, const ImVec2& cursorScreenPos, const std::vector<ImVec2>& points) {
+void DrawPoints(ImDrawList* draw_list, const ImVec2& cursorScreenPos, const std::vector<Node> nodes) {
 	ImU32 point_color = IM_COL32(255, 0, 0, 255); // Kolor punktów (czerwony)
 	float point_radius = 5.0f; // Promień punktu
-	for (const auto& point : points) {
+	for (const auto& point : nodes) {
 		draw_list->AddCircleFilled(
-			ImVec2(cursorScreenPos.x + scalePoint(point.x),
-				cursorScreenPos.y + GRID_SIZE * GRID_COUNT - scalePoint(point.y)),
+			ImVec2(cursorScreenPos.x + scalePoint(point.getCoordinates().x),
+				cursorScreenPos.y + GRID_SIZE * GRID_COUNT - scalePoint(point.getCoordinates().y)),
 			point_radius,
 			point_color
 		);
@@ -82,6 +85,17 @@ void DrawLineBetweenPoints(ImDrawList* draw_list, const ImVec2& offset, const Im
 	draw_list->AddLine(ImVec2(offset.x + scaled_point1.x, offset.y + scaled_point1.y),
 		ImVec2(offset.x + scaled_point2.x, offset.y + scaled_point2.y),
 		color, thickness);
+}
+
+// Funkcja do wczytywania listy plików .vrp z folderu
+std::vector<std::string> getVRPFiles(const std::string& folderPath) {
+	std::vector<std::string> files;
+	for (const auto& entry : std::filesystem::directory_iterator(folderPath)) {
+		if (entry.is_regular_file() && entry.path().extension() == ".vrp") {
+			files.push_back(entry.path().filename().string());
+		}
+	}
+	return files;
 }
 
 int main() {
@@ -108,54 +122,17 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 330");
 
-	// Inicjalizacja generatora losowego
-	std::srand(static_cast<unsigned int>(std::time(nullptr)));
+	// Obiekt klasy Experiment
+	Experiment experiment;
+	bool isFileLoaded = false; // Flaga informująca, czy plik został wczytany
 
-	// Wektor przechowujący współrzędne punktów
-	std::vector<ImVec2> points;
+	// Lista plików .vrp
+	std::vector<std::string> vrpFiles = getVRPFiles("input_files");
+	static int selectedFileIndex = -1; // Indeks wybranego pliku
+
+	//std::vector<ImVec2> points;
 	float grid_size = GRID_SIZE; // Rozmiar pojedynczego kwadratu w pikselach
 	int grid_count = GRID_COUNT; // Liczba kwadratów w wierszu/kolumnie
-
-	// Punkty do rysowania linii
-	ImVec2 closest_point1, closest_point2;
-	bool has_closest_points = false;
-
-	auto randomize_points = [&]() {
-		points.clear();
-		has_closest_points = false; // Resetuj najbliższe punkty
-		for (int i = 0; i < 20; i++) {
-			float random_x = std::rand() % 101; // Generowanie liczby z przedziału [0, 100]
-			float random_y = std::rand() % 101; // Generowanie liczby z przedziału [0, 100]
-			points.emplace_back(random_x, random_y);
-		}
-		};
-
-	// Funkcja do obliczania odległości między dwoma punktami
-	auto calculate_distance = [](const ImVec2& a, const ImVec2& b) {
-		return std::sqrt(std::pow(a.x - b.x, 2) + std::pow(a.y - b.y, 2));
-		};
-
-
-	// Funkcja do znajdowania dwóch najbliższych punktów
-	auto find_closest_points = [&]() {
-		if (points.size() < 2) return; // Nie można znaleźć najbliższych punktów, jeśli jest mniej niż 2 punkty
-		float min_distance = std::numeric_limits<float>::max();
-		for (size_t i = 0; i < points.size(); i++) {
-			for (size_t j = i + 1; j < points.size(); j++) {
-				float distance = calculate_distance(points[i], points[j]);
-				if (distance < min_distance) {
-					min_distance = distance;
-					closest_point1 = points[i];
-					closest_point2 = points[j];
-				}
-			}
-		}
-		has_closest_points = true;
-		};
-
-	// Generowanie punktów po raz pierwszy
-	randomize_points();
-
 
 	// Główna pętla
 	while (!glfwWindowShouldClose(window)) {
@@ -171,28 +148,52 @@ int main() {
 		ImGui::Text("Hello from ImGui + GLFW!");
 		ImGui::Separator();
 
-		// Dodanie przycisku do randomizacji punktów
-		if (ImGui::Button("Randomizuj punkty")) {
-			randomize_points();
-			//for (const auto& point : points) {
-			//	std::cout << "Point: (" << point.x << ", " << point.y << ")" << std::endl; // Debugowanie			
-			//}
+		// Drop-down box z listą plików
+		if (ImGui::BeginCombo("Wybierz plik", selectedFileIndex >= 0 ? vrpFiles[selectedFileIndex].c_str() : "Brak wybranego pliku")) {
+			for (int i = 0; i < vrpFiles.size(); ++i) {
+				bool isSelected = (selectedFileIndex == i);
+				if (ImGui::Selectable(vrpFiles[i].c_str(), isSelected)) {
+					selectedFileIndex = i; // Ustaw wybrany plik
+				}
+				if (isSelected) {
+					ImGui::SetItemDefaultFocus(); // Ustaw fokus na wybranym elemencie
+				}
+			}
+			ImGui::EndCombo();
 		}
 
-		// Dodanie przycisku do znajdowania najbliższych punktów
-		if (ImGui::Button("Znajdź najbliższe punkty")) {
-			find_closest_points();
-		}
-
-		// Dodanie pola tekstowego do wprowadzania nazwy pliku
-		static char filename[128] = ""; // Bufor na nazwę pliku
-		ImGui::InputText("Nazwa pliku", filename, IM_ARRAYSIZE(filename));
-
-		// Dodanie przycisku "Load"
+		// Przycisk "Load"
 		if (ImGui::Button("Load")) {
-			// Na razie przycisk nie wykonuje żadnej akcji
-			std::cout << "Kliknięto przycisk Load. Wprowadzona nazwa pliku: " << filename << std::endl;
+			if (selectedFileIndex >= 0) {
+				std::string filePath = "input_files/" + vrpFiles[selectedFileIndex];
+				if (experiment.loadFromFile(filePath)) {
+					isFileLoaded = true;
+					std::cout << "File loaded succesfully: " << filePath << std::endl;
+				}
+				else {
+					isFileLoaded = false;
+					std::cerr << "File loading failed: " << filePath << std::endl;
+				}
+			}
+			else {
+				std::cerr << "File was not selected" << std::endl;
+			}
 		}
+
+		ImGui::End();
+
+        ImGui::Begin("Experiment Data", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+		// Wyświetlanie podstawowych informacji o eksperymencie
+		ImGui::Text("Name: %s", experiment.getName().c_str());
+		ImGui::Text("Comment: %s", experiment.getComment().c_str());
+		ImGui::Text("Type: %s", experiment.getType().c_str());
+		ImGui::Text("Dimension: %d", experiment.getDimension());
+		ImGui::Text("Edge weight type: %s", experiment.getEdgeWeightType().c_str());
+		ImGui::Text("Capacity: %d", experiment.getCapacity());
+		ImGui::Text("Depot: %d", experiment.getDepot() + 1); // Indeks depozytu (1-based)
+		ImGui::Text("No of Trucks: %d", experiment.getTrucks().size());
+		ImGui::Text("Optimal Value: %.2f", experiment.getOptimalValue()); // Wyświetlanie optymalnej wartości
 
 		ImGui::End();
 
@@ -205,13 +206,7 @@ int main() {
         
 		DrawGridWithLabels(draw_list, cursorScreenPos, grid_size, grid_count); // Rysowanie siatki
 		
-		DrawPoints(draw_list, cursorScreenPos, points); // Rysowanie punktów na siatce
-		
-		// W głównej pętli:
-		if (has_closest_points) {
-			ImU32 line_color = IM_COL32(0, 255, 0, 255); // Kolor linii (zielony)
-			DrawLineBetweenPoints(draw_list, cursorScreenPos, closest_point1, closest_point2, line_color);
-		}
+		DrawPoints(draw_list, cursorScreenPos, experiment.getNodes()); // Rysowanie punktów na siatce
 
 		ImGui::End();
 
