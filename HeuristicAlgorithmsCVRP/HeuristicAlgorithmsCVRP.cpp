@@ -63,17 +63,23 @@ void DrawGridWithLabels(ImDrawList* draw_list, const ImVec2& cursorScreenPos, fl
 	draw_list->AddText(axis_y_label_pos, IM_COL32(255, 255, 255, 255), "Axis Y");
 }
 
-void DrawPoints(ImDrawList* draw_list, const ImVec2& cursorScreenPos, const std::vector<Node> nodes) {
-	ImU32 point_color = IM_COL32(255, 0, 0, 255); // Kolor punktów (czerwony)
-	float point_radius = 5.0f; // Promień punktu
-	for (const auto& point : nodes) {
-		draw_list->AddCircleFilled(
-			ImVec2(cursorScreenPos.x + scalePoint(point.getCoordinates().x),
-				cursorScreenPos.y + GRID_SIZE * GRID_COUNT - scalePoint(point.getCoordinates().y)),
-			point_radius,
-			point_color
-		);
-	}
+void DrawPoints(ImDrawList* draw_list, const ImVec2& cursorScreenPos, const Experiment experiment) {
+    ImU32 point_color = IM_COL32(255, 0, 0, 255); // Kolor punktów (czerwony)
+    ImU32 depot_color = IM_COL32(0, 255, 0, 255); // Kolor punktu depozytu (zielony)
+    float point_radius = 5.0f; // Promień punktu
+    auto& nodes = experiment.getNodes();
+    int depotIndex = experiment.getDepot(); // Indeks depozytu
+
+    for (int i = 0; i < nodes.size(); ++i) {
+        const auto& point = nodes[i];
+        ImU32 color = (i == depotIndex) ? depot_color : point_color; // Wybór koloru
+        draw_list->AddCircleFilled(
+            ImVec2(cursorScreenPos.x + scalePoint(point.getCoordinates().x),
+                cursorScreenPos.y + GRID_SIZE * GRID_COUNT - scalePoint(point.getCoordinates().y)),
+            point_radius,
+            color
+        );
+    }
 }
 
 void DrawLineBetweenPoints(ImDrawList* draw_list, const ImVec2& offset, const ImVec2& point1, const ImVec2& point2, ImU32 color, float thickness = 2.0f) {
@@ -124,7 +130,7 @@ int main() {
 
 	// Obiekt klasy Experiment
 	Experiment experiment;
-	bool isFileLoaded = false; // Flaga informująca, czy plik został wczytany
+	//bool isFileLoaded = false; // Flaga informująca, czy plik został wczytany
 
 	// Lista plików .vrp
 	std::vector<std::string> vrpFiles = getVRPFiles("input_files");
@@ -167,12 +173,12 @@ int main() {
 			if (selectedFileIndex >= 0) {
 				std::string filePath = "input_files/" + vrpFiles[selectedFileIndex];
 				if (experiment.loadFromFile(filePath)) {
-					isFileLoaded = true;
-					std::cout << "File loaded succesfully: " << filePath << std::endl;
+					//isFileLoaded = true;
+					//std::cout << "File loaded succesfully: " << filePath << std::endl;
 				}
 				else {
-					isFileLoaded = false;
-					std::cerr << "File loading failed: " << filePath << std::endl;
+					//isFileLoaded = false;
+					//std::cerr << "File loading failed: " << filePath << std::endl;
 				}
 			}
 			else {
@@ -199,14 +205,14 @@ int main() {
 
 		ImGui::SetNextWindowSize(ImVec2(850, 825));
 		// Nowe okno z grafem
-		ImGui::Begin("Graf 100x100", nullptr, ImGuiWindowFlags_NoResize);
+		ImGui::Begin("Graph 100x100", nullptr, ImGuiWindowFlags_NoResize);
 		ImDrawList* draw_list = ImGui::GetWindowDrawList();
 		ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos(); // Pozycja początkowa
 		cursorScreenPos.x += 75; // Przesunięcie w prawo
         
 		DrawGridWithLabels(draw_list, cursorScreenPos, grid_size, grid_count); // Rysowanie siatki
 		
-		DrawPoints(draw_list, cursorScreenPos, experiment.getNodes()); // Rysowanie punktów na siatce
+		DrawPoints(draw_list, cursorScreenPos, experiment); // Rysowanie punktów na siatce
 
 		ImGui::End();
 

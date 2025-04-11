@@ -15,6 +15,10 @@ int Node::getDemand() const { return demand; }
 void Node::setDemand(int demand) { this->demand = demand; }
 
 // Metody
-void Node::delivery(int amountDelivered) {
-	demand -= amountDelivered;
+void Node::deliver(Truck &truck) {
+	if (truck.getLoad() > this->demand) {
+		this->demand -= truck.deliver(this->getCoordinates(), this->demand);}
+	else {
+		this->demand -= truck.deliver(this->getCoordinates(), truck.getLoad());
+	}
 }

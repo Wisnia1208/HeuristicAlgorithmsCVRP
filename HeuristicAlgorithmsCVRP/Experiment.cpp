@@ -100,7 +100,6 @@ bool Experiment::loadFromFile(const std::string& filePath)
     return true;
 }
 
-
 // Gettery
 const std::string& Experiment::getName() const { return name; }
 const std::string& Experiment::getComment() const { return comment; }

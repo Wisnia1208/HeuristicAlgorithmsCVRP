@@ -20,6 +20,6 @@ void Truck::addToRoute(const ImVec2& point) {
 }
 int Truck::deliver(ImVec2 deliverTo, int amountDelivered) {
 	load -= amountDelivered;
-	return amountDelivered;
 	addToRoute(deliverTo);
+	return amountDelivered;
 }

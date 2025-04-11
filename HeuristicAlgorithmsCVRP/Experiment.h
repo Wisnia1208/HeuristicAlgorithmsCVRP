@@ -37,7 +37,4 @@ public:
     int getDepot() const;
     const std::vector<Truck>& getTrucks() const;
     double getOptimalValue() const;
-
-    // Metody
-	void parseComment(const std::string& comment);
 };

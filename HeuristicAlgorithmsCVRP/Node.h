@@ -1,6 +1,7 @@
 #pragma once
 
 #include "imgui.h" // Dodano include dla ImVec2
+#include "Truck.h"
 
 class Node
 {
@@ -20,5 +21,5 @@ public:
     // Settery
     void setDemand(int demand);
 	// Metody
-    void delivery(int amountDelivered);
+    void deliver(Truck& truck);
 };
