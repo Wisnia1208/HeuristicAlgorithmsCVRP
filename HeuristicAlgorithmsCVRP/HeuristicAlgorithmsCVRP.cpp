@@ -151,8 +151,6 @@ int main() {
 
 		// Okno GUI
 		ImGui::Begin("Panel Sterowania", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-		ImGui::Text("Hello from ImGui + GLFW!");
-		ImGui::Separator();
 
 		// Drop-down box z listą plików
 		if (ImGui::BeginCombo("Wybierz plik", selectedFileIndex >= 0 ? vrpFiles[selectedFileIndex].c_str() : "Brak wybranego pliku")) {
