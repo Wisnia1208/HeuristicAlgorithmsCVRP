@@ -180,8 +180,13 @@ int main() {
 				}
 			}
 			else {
-				std::cerr << "File was not selected" << std::endl;
+				//std::cerr << "File was not selected" << std::endl;
 			}
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Run all experiments")) {
+			
 		}
 
 		ImGui::End();
@@ -201,12 +206,13 @@ int main() {
 
 		ImGui::End();
 
-		ImGui::SetNextWindowSize(ImVec2(850, 825));
+		ImGui::SetNextWindowSize(ImVec2(950, 900));
 		// Nowe okno z grafem
 		ImGui::Begin("Graph 100x100", nullptr, ImGuiWindowFlags_NoResize);
 		ImDrawList* draw_list = ImGui::GetWindowDrawList();
 		ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos(); // Pozycja początkowa
 		cursorScreenPos.x += 75; // Przesunięcie w prawo
+		cursorScreenPos.y += 75; // Przesunięcie w prawo
         
 		DrawGridWithLabels(draw_list, cursorScreenPos, grid_size, grid_count); // Rysowanie siatki
 		
