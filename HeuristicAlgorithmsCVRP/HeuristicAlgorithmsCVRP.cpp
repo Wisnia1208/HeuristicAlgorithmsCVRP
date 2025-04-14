@@ -3,6 +3,7 @@
 #include "imgui_impl_opengl3.h"
 
 #include "Experiment.h"
+#include "AlgorithmRandomClients.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -130,6 +131,8 @@ int main() {
 
 	// Obiekt klasy Experiment
 	Experiment experiment;
+	AlgorithmRandomClients algorithmRandomClients;
+	bool drawTruckRoutes = false; // Flaga kontrolująca rysowanie tras
 	//bool isFileLoaded = false; // Flaga informująca, czy plik został wczytany
 
 	// Lista plików .vrp
@@ -171,6 +174,7 @@ int main() {
 			if (selectedFileIndex >= 0) {
 				std::string filePath = "input_files/" + vrpFiles[selectedFileIndex];
 				if (experiment.loadFromFile(filePath)) {
+					drawTruckRoutes = false; // Resetowanie flagi przed nowym wczytaniem
 					//isFileLoaded = true;
 					//std::cout << "File loaded succesfully: " << filePath << std::endl;
 				}
@@ -186,7 +190,9 @@ int main() {
 
 		ImGui::SameLine();
 		if (ImGui::Button("Run all experiments")) {
-			
+			algorithmRandomClients.set(experiment.getNodes(), experiment.getTrucks());
+			algorithmRandomClients.solve();
+			drawTruckRoutes = true; // Ustawienie flagi na true
 		}
 
 		ImGui::End();
@@ -217,6 +223,33 @@ int main() {
 		DrawGridWithLabels(draw_list, cursorScreenPos, grid_size, grid_count); // Rysowanie siatki
 		
 		DrawPoints(draw_list, cursorScreenPos, experiment); // Rysowanie punktów na siatce
+
+		if (drawTruckRoutes) {
+			for (const auto& truck : algorithmRandomClients.getTrucks()) {
+				const auto& route = truck.getRoute();
+				for (size_t i = 0; i < route.size() - 1; ++i) {
+					DrawLineBetweenPoints(
+						draw_list,
+						cursorScreenPos,
+						route[i],
+						route[i + 1],
+						IM_COL32(0, 255, 0, 255), // Zielony kolor linii
+						2.0f
+					);
+				}
+				// Rysowanie linii powrotnej do depozytu
+				if (!route.empty()) {
+					DrawLineBetweenPoints(
+						draw_list,
+						cursorScreenPos,
+						route.back(),
+						truck.getCoordinates(),
+						IM_COL32(255, 0, 0, 255), // Czerwony kolor linii
+						2.0f
+					);
+				}
+			}
+		}
 
 		ImGui::End();
 

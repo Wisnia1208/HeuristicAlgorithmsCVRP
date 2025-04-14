@@ -135,6 +135,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Algorithm.cpp" />
+    <ClCompile Include="AlgorithmRandomClients.cpp" />
     <ClCompile Include="Experiment.cpp" />
     <ClCompile Include="HeuristicAlgorithmsCVRP.cpp" />
     <ClCompile Include="Node.cpp" />
@@ -150,6 +152,8 @@
     <ClCompile Include="Truck.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Algorithm.h" />
+    <ClInclude Include="AlgorithmRandomClients.h" />
     <ClInclude Include="Experiment.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="third_party\imgui\backends\imgui_impl_glfw.h" />
