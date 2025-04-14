@@ -4,11 +4,9 @@
 class AlgorithmRandomClients :
     public Algorithm
 {
-private:
-	float sumOfRoutes;
 public:
 	AlgorithmRandomClients();
-	float getSumOfRoutes() const;
+	double getSumOfRoutes() const;
 	void set(const std::vector<Node> nodes, const std::vector<Truck> trucks);
 	void solve();
 	std::vector<Truck> getTrucks() const;

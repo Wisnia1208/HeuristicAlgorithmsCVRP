@@ -190,9 +190,7 @@ int main() {
 
 		ImGui::SameLine();
 		if (ImGui::Button("Run all experiments")) {
-			algorithmRandomClients.set(experiment.getNodes(), experiment.getTrucks());
-			algorithmRandomClients.solve();
-			drawTruckRoutes = true; // Ustawienie flagi na true
+			//todo
 		}
 
 		ImGui::End();
@@ -250,6 +248,34 @@ int main() {
 				}
 			}
 		}
+
+		ImGui::End();
+
+		ImGui::Begin("Algorithms Panel", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+		// Algorytm RandomClients
+		static double randomClientsDiff = 0.0f; // Przechowuje sumę ścieżek dla RandomClients
+		if (ImGui::Button("Run##RandomClients")) {
+			algorithmRandomClients.set(experiment.getNodes(), experiment.getTrucks());
+			algorithmRandomClients.solve();
+			randomClientsDiff = algorithmRandomClients.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
+			drawTruckRoutes = true;
+		}
+		ImGui::SameLine();
+		ImGui::Text("Algorithm Random Clients");
+		ImGui::SameLine();
+		ImGui::InputDouble("##RandomClientsDiff", &randomClientsDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
+
+		// Dummy algorytm
+		static double dummySum = 0.0f; // Przechowuje sumę ścieżek dla dummy algorytmu
+		if (ImGui::Button("Run##Dummy")) {
+			// Tutaj można dodać logikę dla dummy algorytmu
+			dummySum = 0.0f; // Przykładowa wartość
+		}
+		ImGui::SameLine();
+		ImGui::Text("Dummy Algorithm");
+		ImGui::SameLine();
+		ImGui::InputDouble("##dummysum", &dummySum, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
 
 		ImGui::End();
 

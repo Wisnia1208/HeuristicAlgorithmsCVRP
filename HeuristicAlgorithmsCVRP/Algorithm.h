@@ -8,6 +8,7 @@ class Algorithm
 protected:
 	std::vector<Node> nodes;
 	std::vector<Truck> trucks;
+	double sumOfallRoutes;
 	int depotIndex;
 };
 

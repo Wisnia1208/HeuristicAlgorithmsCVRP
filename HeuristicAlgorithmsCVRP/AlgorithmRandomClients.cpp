@@ -8,12 +8,12 @@ void AlgorithmRandomClients::set(const std::vector<Node> nodes, const std::vecto
 	this->trucks = trucks;
 }
 
-float AlgorithmRandomClients::getSumOfRoutes() const {
-	return sumOfRoutes;
+double AlgorithmRandomClients::getSumOfRoutes() const {
+	return sumOfallRoutes;
 }
 
 void AlgorithmRandomClients::solve() {
-	float sumOfRoutes = 0;
+	sumOfallRoutes = 0;
 	for (auto& node : nodes) {
 		do {
 			int randomTruckIndex = rand() % trucks.size();
@@ -28,7 +28,7 @@ void AlgorithmRandomClients::solve() {
 		for (size_t i = 0; i < truck.getRoute().size() - 1; ++i) {
 			routeLength += calculateDistance(truck.getRoute()[i], truck.getRoute()[i + 1]);
 		}
-		sumOfRoutes += routeLength;
+		sumOfallRoutes += routeLength;
 	}
 }
 
