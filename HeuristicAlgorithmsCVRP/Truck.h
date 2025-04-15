@@ -9,7 +9,7 @@ class Truck
         int x;       // Wspó³rzêdna X
         int y;       // Wspó³rzêdna Y
         int load;   // Towar
-		std::vector <ImVec2> route; // Droga
+		std::vector<ImVec2> route; // Droga
 
 	public:
 		// Konstruktor domyœlny
@@ -21,8 +21,11 @@ class Truck
 		int getLoad() const;
 		// Settery
 		void setLoad(int load);
+		void setRoute(const std::vector<ImVec2>& route);
 		// Metody
 		void addToRoute(const ImVec2& point);
 		const std::vector<ImVec2>& getRoute() const;
 		int deliver(ImVec2 deliverTo, int amountDelivered);
+		void swapRoute(int i, int j);
+		double getRouteLength() const;
 };

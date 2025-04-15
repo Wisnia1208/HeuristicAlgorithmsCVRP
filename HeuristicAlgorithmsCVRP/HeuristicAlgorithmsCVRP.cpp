@@ -3,7 +3,9 @@
 #include "imgui_impl_opengl3.h"
 
 #include "Experiment.h"
+#include "Algorithm.h"
 #include "AlgorithmRandomClients.h"
+#include "AlgorithmGreedy.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -94,6 +96,32 @@ void DrawLineBetweenPoints(ImDrawList* draw_list, const ImVec2& offset, const Im
 		color, thickness);
 }
 
+auto getColorForTruck = [](int index) -> ImU32 {
+	static const ImU32 colors[] = {
+		IM_COL32(255, 0, 0, 255),    // Czerwony
+		IM_COL32(0, 255, 0, 255),    // Zielony
+		IM_COL32(0, 0, 255, 255),    // Niebieski
+		IM_COL32(255, 255, 0, 255),  // Żółty
+		IM_COL32(255, 0, 255, 255),  // Fioletowy
+		IM_COL32(0, 255, 255, 255),  // Turkusowy
+		IM_COL32(128, 0, 0, 255),    // Bordowy
+		IM_COL32(0, 128, 0, 255),    // Ciemnozielony
+		IM_COL32(0, 0, 128, 255),    // Granatowy
+		IM_COL32(128, 128, 0, 255),  // Oliwkowy
+		IM_COL32(128, 0, 128, 255),  // Purpurowy
+		IM_COL32(0, 128, 128, 255),  // Morski
+		IM_COL32(192, 192, 192, 255),// Srebrny
+		IM_COL32(128, 128, 128, 255),// Szary
+		IM_COL32(255, 165, 0, 255),  // Pomarańczowy
+		IM_COL32(255, 20, 147, 255), // Różowy
+		IM_COL32(75, 0, 130, 255),   // Indygo
+		IM_COL32(173, 255, 47, 255), // Zielonożółty
+		IM_COL32(139, 69, 19, 255),  // Brązowy
+		IM_COL32(70, 130, 180, 255)  // Stalowy niebieski
+	};
+	return colors[index % (sizeof(colors) / sizeof(colors[0]))];
+	};
+
 // Funkcja do wczytywania listy plików .vrp z folderu
 std::vector<std::string> getVRPFiles(const std::string& folderPath) {
 	std::vector<std::string> files;
@@ -131,7 +159,9 @@ int main() {
 
 	// Obiekt klasy Experiment
 	Experiment experiment;
+	Algorithm algorithm;
 	AlgorithmRandomClients algorithmRandomClients;
+	AlgorithmGreedy algorithmGreedy;
 	bool drawTruckRoutes = false; // Flaga kontrolująca rysowanie tras
 	//bool isFileLoaded = false; // Flaga informująca, czy plik został wczytany
 
@@ -223,31 +253,26 @@ int main() {
 		DrawPoints(draw_list, cursorScreenPos, experiment); // Rysowanie punktów na siatce
 
 		if (drawTruckRoutes) {
-			for (const auto& truck : algorithmRandomClients.getTrucks()) {
+			int truckIndex = 0; // Indeks ciężarówki
+			for (const auto& truck : algorithm.getTrucks()) {
 				const auto& route = truck.getRoute();
+				ImU32 truckColor = getColorForTruck(truckIndex); // Pobierz kolor dla ciężarówki
+
+				// Rysowanie ścieżek ciężarówki
 				for (size_t i = 0; i < route.size() - 1; ++i) {
 					DrawLineBetweenPoints(
 						draw_list,
 						cursorScreenPos,
 						route[i],
 						route[i + 1],
-						IM_COL32(0, 255, 0, 255), // Zielony kolor linii
+						truckColor, // Użyj koloru ciężarówki
 						2.0f
 					);
 				}
-				// Rysowanie linii powrotnej do depozytu
-				if (!route.empty()) {
-					DrawLineBetweenPoints(
-						draw_list,
-						cursorScreenPos,
-						route.back(),
-						truck.getCoordinates(),
-						IM_COL32(255, 0, 0, 255), // Czerwony kolor linii
-						2.0f
-					);
-				}
+				++truckIndex; // Zwiększ indeks ciężarówki
 			}
 		}
+
 
 		ImGui::End();
 
@@ -259,12 +284,48 @@ int main() {
 			algorithmRandomClients.set(experiment.getNodes(), experiment.getTrucks());
 			algorithmRandomClients.solve();
 			randomClientsDiff = algorithmRandomClients.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
+			algorithm.setTrucks(algorithmRandomClients.getTrucks());
 			drawTruckRoutes = true;
 		}
 		ImGui::SameLine();
 		ImGui::Text("Algorithm Random Clients");
 		ImGui::SameLine();
 		ImGui::InputDouble("##RandomClientsDiff", &randomClientsDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
+		ImGui::SameLine();
+		ImGui::Text("(difference from optimum)");
+
+		// Algorytm Greedy
+		static double greedyDiff = 0.0f; // Przechowuje sumę ścieżek dla Greedy
+		if (ImGui::Button("Run##Greedy")) {
+			algorithmGreedy.set(experiment.getNodes(), experiment.getTrucks());
+			algorithmGreedy.solve();
+			greedyDiff = algorithmGreedy.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
+			algorithm.setTrucks(algorithmGreedy.getTrucks());
+			drawTruckRoutes = true;
+		}
+		ImGui::SameLine();
+		ImGui::Text("Algorithm Greedy");
+		ImGui::SameLine();
+		ImGui::InputDouble("##GreedyDiff", &greedyDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
+		ImGui::SameLine();
+		ImGui::Text("(difference from optimum)");
+
+		// Algorytm Greedy 2-opt
+		static double greedy2OptDiff = 0.0f; // Przechowuje sumę ścieżek dla Greedy 2-opt
+		if (ImGui::Button("Run##Greedy2Opt")) {
+			algorithmGreedy.set(experiment.getNodes(), experiment.getTrucks());
+			algorithmGreedy.solve();
+			algorithmGreedy.kOpt(2); // Uruchomienie algorytmu 2-opt
+			greedy2OptDiff = algorithmGreedy.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
+			algorithm.setTrucks(algorithmGreedy.getTrucks());
+			drawTruckRoutes = true;
+		}
+		ImGui::SameLine();
+		ImGui::Text("Algorithm Greedy 2-opt");
+		ImGui::SameLine();
+		ImGui::InputDouble("##Greedy2OptDiff", &greedy2OptDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
+		ImGui::SameLine();
+		ImGui::Text("(difference from optimum)");
 
 		// Dummy algorytm
 		static double dummySum = 0.0f; // Przechowuje sumę ścieżek dla dummy algorytmu
@@ -276,6 +337,8 @@ int main() {
 		ImGui::Text("Dummy Algorithm");
 		ImGui::SameLine();
 		ImGui::InputDouble("##dummysum", &dummySum, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
+		ImGui::SameLine();
+		ImGui::Text("(difference from optimum)");
 
 		ImGui::End();
 

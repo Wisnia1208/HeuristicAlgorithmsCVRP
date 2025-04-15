@@ -13,7 +13,9 @@ protected:
 public:
 	double getSumOfRoutes() const;
 	void set(const std::vector<Node> nodes, const std::vector<Truck> trucks);
+	void setTrucks(const std::vector<Truck> trucks);
 	std::vector<Truck> getTrucks() const;
-	float calculateDistance(const ImVec2 firstPoint, const ImVec2 secondPoint) const;
+	double calculateDistance(const ImVec2 firstPoint, const ImVec2 secondPoint) const;
+	void kOpt(const int k);
 };
 
