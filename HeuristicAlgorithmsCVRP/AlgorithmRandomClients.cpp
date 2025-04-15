@@ -9,7 +9,6 @@ void AlgorithmRandomClients::solve() {
 	}
 
     while (true) {
-        // Filtruj wêz³y z niezerowym zapotrzebowaniem
         std::vector<Node*> nodesWithDemand;
         for (auto& node : nodes) {
             if (node.getDemand() > 0) {
@@ -17,20 +16,16 @@ void AlgorithmRandomClients::solve() {
             }
         }
 
-        // Jeœli nie ma wiêcej wêz³ów z zapotrzebowaniem, zakoñcz pêtlê
         if (nodesWithDemand.empty()) {
             break;
         }
 
-        // Wybierz losow¹ ciê¿arówkê
         int randomTruckIndex = rand() % trucks.size();
         Truck& selectedTruck = trucks[randomTruckIndex];
 
-        // Wybierz losowy wêze³ z niezerowym zapotrzebowaniem
         int randomNodeIndex = rand() % nodesWithDemand.size();
         Node* selectedNode = nodesWithDemand[randomNodeIndex];
 
-        // Dostarcz towar do wybranego wêz³a
         selectedNode->deliver(selectedTruck);
     }
 
