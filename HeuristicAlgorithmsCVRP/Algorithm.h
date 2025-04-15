@@ -10,5 +10,10 @@ protected:
 	std::vector<Truck> trucks;
 	double sumOfallRoutes;
 	int depotIndex;
+public:
+	double getSumOfRoutes() const;
+	void set(const std::vector<Node> nodes, const std::vector<Truck> trucks);
+	std::vector<Truck> getTrucks() const;
+	float calculateDistance(const ImVec2 firstPoint, const ImVec2 secondPoint) const;
 };
 
