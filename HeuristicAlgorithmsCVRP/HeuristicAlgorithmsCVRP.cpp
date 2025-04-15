@@ -294,6 +294,23 @@ int main() {
 		ImGui::SameLine();
 		ImGui::Text("(difference from optimum)");
 
+		// Algorytm RandomClients 2-opt
+		static double randomClients2OptDiff = 0.0f; // Przechowuje sumę ścieżek dla RandomClients 2-opt
+		if (ImGui::Button("Run##RandomClients2Opt")) {
+			algorithmRandomClients.set(experiment.getNodes(), experiment.getTrucks());
+			algorithmRandomClients.solve();
+			algorithmRandomClients.twoOpt(); // Uruchomienie algorytmu 2-opt
+			randomClients2OptDiff = algorithmRandomClients.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
+			algorithm.setTrucks(algorithmRandomClients.getTrucks());
+			drawTruckRoutes = true;
+		}
+		ImGui::SameLine();
+		ImGui::Text("Algorithm Random Clients 2-opt");
+		ImGui::SameLine();
+		ImGui::InputDouble("##RandomClients2OptDiff", &randomClients2OptDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
+		ImGui::SameLine();
+		ImGui::Text("(difference from optimum)");
+
 		// Algorytm Greedy
 		static double greedyDiff = 0.0f; // Przechowuje sumę ścieżek dla Greedy
 		if (ImGui::Button("Run##Greedy")) {
