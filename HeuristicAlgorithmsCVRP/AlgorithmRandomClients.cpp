@@ -13,12 +13,15 @@ double AlgorithmRandomClients::getSumOfRoutes() const {
 }
 
 void AlgorithmRandomClients::solve() {
+	for (auto& truck : trucks) {
+		truck.addToRoute(nodes[depotIndex].getCoordinates());
+	}
 	sumOfallRoutes = 0;
 	for (auto& node : nodes) {
-		do {
+		while (node.getDemand() > 0) {
 			int randomTruckIndex = rand() % trucks.size();
 			node.deliver(trucks[randomTruckIndex]);
-		} while (node.getDemand() > 0);
+		}
 	}
 	for (auto& truck : trucks) {
 		truck.addToRoute(nodes[depotIndex].getCoordinates());
