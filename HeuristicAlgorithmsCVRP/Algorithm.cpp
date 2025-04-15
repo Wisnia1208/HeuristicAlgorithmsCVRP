@@ -31,11 +31,11 @@ void Algorithm::kOpt(const int k) { //nie rozumiem kOpta
 		Truck tempTruck = truck;
 		int routeSize = truck.getRoute().size();
 		for (int i = 0; i < routeSize - k; i++) {
-			for (int j = i + 1; j < j + k; j++) {
+			for (int j = i + 1; j < routeSize; j++) {
 				tempTruck.swapRoute(i, j);
 				double newRouteLength = tempTruck.getRouteLength();
 				if (newRouteLength < truck.getRouteLength()) {
-					sumOfallRoutes -= tempTruck.getRouteLength();
+					sumOfallRoutes -= truck.getRouteLength();
 					truck = tempTruck;
 					sumOfallRoutes += newRouteLength;
 				}
