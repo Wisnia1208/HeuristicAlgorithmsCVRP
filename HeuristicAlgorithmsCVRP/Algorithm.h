@@ -16,6 +16,6 @@ public:
 	void setTrucks(const std::vector<Truck> trucks);
 	std::vector<Truck> getTrucks() const;
 	double calculateDistance(const ImVec2 firstPoint, const ImVec2 secondPoint) const;
-	void kOpt(const int k);
+	void twoOpt();
 };
 

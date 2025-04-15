@@ -315,7 +315,7 @@ int main() {
 		if (ImGui::Button("Run##Greedy2Opt")) {
 			algorithmGreedy.set(experiment.getNodes(), experiment.getTrucks());
 			algorithmGreedy.solve();
-			algorithmGreedy.kOpt(2); // Uruchomienie algorytmu 2-opt
+			algorithmGreedy.twoOpt(); // Uruchomienie algorytmu 2-opt
 			greedy2OptDiff = algorithmGreedy.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
 			algorithm.setTrucks(algorithmGreedy.getTrucks());
 			drawTruckRoutes = true;

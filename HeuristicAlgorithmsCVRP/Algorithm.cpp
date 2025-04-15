@@ -23,26 +23,46 @@ double Algorithm::calculateDistance(const ImVec2 firstPoint, const ImVec2 second
 	return std::sqrt(std::pow(firstPoint.x - secondPoint.x, 2) + std::pow(firstPoint.y - secondPoint.y, 2));
 }
 
-void Algorithm::kOpt(const int k) { //nie rozumiem kOpta
-	if (k < 2) {
-		return;
-	}
-	for(auto& truck : trucks) {
-		Truck tempTruck = truck;
-		int routeSize = truck.getRoute().size();
-		for (int i = 0; i < routeSize - k; i++) {
-			for (int j = i + 1; j < routeSize; j++) {
-				tempTruck.swapRoute(i, j);
-				double newRouteLength = tempTruck.getRouteLength();
-				if (newRouteLength < truck.getRouteLength()) {
-					sumOfallRoutes -= truck.getRouteLength();
-					truck = tempTruck;
-					sumOfallRoutes += newRouteLength;
-				}
-				else {
-					tempTruck.swapRoute(i, j);
-				}
-			}
-		}
-	}
+void Algorithm::twoOpt() {
+    bool improvement = true;
+
+    // Pêtla g³ówna - dopóki znajdujemy lepsze rozwi¹zanie
+    while (improvement) {
+        improvement = false;
+
+        // Iteracja po ka¿dej ciê¿arówce
+        for (auto& truck : trucks) {
+            int routeSize = truck.getRoute().size();
+
+            // Sprawdzenie, czy trasa ma wystarczaj¹c¹ liczbê punktów do analizy
+            if (routeSize < 4) { // Minimum 4 punkty, aby zamiana dwóch krawêdzi mia³a sens
+                continue;
+            }
+
+            // Iteracja po wszystkich mo¿liwych parach krawêdzi
+            for (int i = 1; i < routeSize - 2; i++) {
+                for (int j = i + 1; j < routeSize - 1; j++) {
+                    // Oblicz d³ugoœæ trasy przed zamian¹
+                    double oldDistance = truck.getRouteLength();
+
+                    // Zamiana dwóch krawêdzi
+                    truck.swapRoute(i, j);
+
+                    // Oblicz d³ugoœæ trasy po zamianie
+                    double newDistance = truck.getRouteLength();
+
+                    // Jeœli nowa trasa jest lepsza, zachowaj zmiany
+                    if (newDistance < oldDistance) {
+                        sumOfallRoutes -= oldDistance;
+                        sumOfallRoutes += newDistance;
+                        improvement = true;
+                    }
+                    else {
+                        // Przywróæ oryginaln¹ trasê, jeœli zmiana nie jest korzystna
+                        truck.swapRoute(i, j);
+                    }
+                }
+            }
+        }
+    }
 }
