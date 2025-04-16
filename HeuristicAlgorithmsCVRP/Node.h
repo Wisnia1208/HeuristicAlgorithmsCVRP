@@ -15,6 +15,8 @@ public:
     Node();
     // Konstruktor z parametrami
     Node(int x, int y, int demand);
+    // Add the equality operator to the Node class  
+    bool operator==(const Node& other) const;
     // Gettery
 	ImVec2 getCoordinates() const;
     int getDemand() const;

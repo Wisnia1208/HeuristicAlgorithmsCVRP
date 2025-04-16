@@ -136,6 +136,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Algorithm.cpp" />
+    <ClCompile Include="AlgorithmClarkeWright.cpp" />
     <ClCompile Include="AlgorithmGreedy.cpp" />
     <ClCompile Include="AlgorithmRandomClients.cpp" />
     <ClCompile Include="Experiment.cpp" />
@@ -154,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm.h" />
+    <ClInclude Include="AlgorithmClarkeWright.h" />
     <ClInclude Include="AlgorithmGreedy.h" />
     <ClInclude Include="AlgorithmRandomClients.h" />
     <ClInclude Include="Experiment.h" />

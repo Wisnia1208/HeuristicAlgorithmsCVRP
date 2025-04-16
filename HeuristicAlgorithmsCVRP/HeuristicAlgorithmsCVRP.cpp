@@ -6,6 +6,7 @@
 #include "Algorithm.h"
 #include "AlgorithmRandomClients.h"
 #include "AlgorithmGreedy.h"
+#include "AlgorithmClarkeWright.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -162,6 +163,7 @@ int main() {
 	Algorithm algorithm;
 	AlgorithmRandomClients algorithmRandomClients;
 	AlgorithmGreedy algorithmGreedy;
+	AlgorithmClarkeWright algorithmClarkeWright;
 	bool drawTruckRoutes = false; // Flaga kontrolująca rysowanie tras
 	//bool isFileLoaded = false; // Flaga informująca, czy plik został wczytany
 
@@ -281,7 +283,7 @@ int main() {
 		// Algorytm RandomClients
 		static double randomClientsDiff = 0.0f; // Przechowuje sumę ścieżek dla RandomClients
 		if (ImGui::Button("Run##RandomClients")) {
-			algorithmRandomClients.set(experiment.getNodes(), experiment.getTrucks());
+			algorithmRandomClients.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
 			algorithmRandomClients.solve();
 			randomClientsDiff = algorithmRandomClients.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
 			algorithm.setTrucks(algorithmRandomClients.getTrucks());
@@ -297,7 +299,7 @@ int main() {
 		// Algorytm RandomClients 2-opt
 		static double randomClients2OptDiff = 0.0f; // Przechowuje sumę ścieżek dla RandomClients 2-opt
 		if (ImGui::Button("Run##RandomClients2Opt")) {
-			algorithmRandomClients.set(experiment.getNodes(), experiment.getTrucks());
+			algorithmRandomClients.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
 			algorithmRandomClients.solve();
 			algorithmRandomClients.twoOpt(); // Uruchomienie algorytmu 2-opt
 			randomClients2OptDiff = algorithmRandomClients.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
@@ -314,7 +316,7 @@ int main() {
 		// Algorytm Greedy
 		static double greedyDiff = 0.0f; // Przechowuje sumę ścieżek dla Greedy
 		if (ImGui::Button("Run##Greedy")) {
-			algorithmGreedy.set(experiment.getNodes(), experiment.getTrucks());
+			algorithmGreedy.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());;
 			algorithmGreedy.solve();
 			greedyDiff = algorithmGreedy.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
 			algorithm.setTrucks(algorithmGreedy.getTrucks());
@@ -330,7 +332,7 @@ int main() {
 		// Algorytm Greedy 2-opt
 		static double greedy2OptDiff = 0.0f; // Przechowuje sumę ścieżek dla Greedy 2-opt
 		if (ImGui::Button("Run##Greedy2Opt")) {
-			algorithmGreedy.set(experiment.getNodes(), experiment.getTrucks());
+			algorithmGreedy.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
 			algorithmGreedy.solve();
 			algorithmGreedy.twoOpt(); // Uruchomienie algorytmu 2-opt
 			greedy2OptDiff = algorithmGreedy.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
@@ -341,6 +343,39 @@ int main() {
 		ImGui::Text("Algorithm Greedy 2-opt");
 		ImGui::SameLine();
 		ImGui::InputDouble("##Greedy2OptDiff", &greedy2OptDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
+		ImGui::SameLine();
+		ImGui::Text("(difference from optimum)");
+
+		// Algorytm Clarke-Wright
+		static double clarkeWrightDiff = 0.0f; // Przechowuje sumę ścieżek dla Clarke-Wright
+		if (ImGui::Button("Run##ClarkeWright")) {
+			algorithmClarkeWright.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+			algorithmClarkeWright.solve();
+			clarkeWrightDiff = algorithmClarkeWright.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
+			algorithm.setTrucks(algorithmClarkeWright.getTrucks());
+			drawTruckRoutes = true;
+		}
+		ImGui::SameLine();
+		ImGui::Text("Algorithm Clarke-Wright");
+		ImGui::SameLine();
+		ImGui::InputDouble("##ClarkeWrightDiff", &clarkeWrightDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
+		ImGui::SameLine();
+		ImGui::Text("(difference from optimum)");
+
+		// Algorytm Clarke-Wright 2-opt
+		static double clarkeWright2OptDiff = 0.0f; // Przechowuje sumę ścieżek dla Clarke-Wright 2-opt
+		if (ImGui::Button("Run##ClarkeWright2Opt")) {
+			algorithmClarkeWright.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+			algorithmClarkeWright.solve();
+			algorithmClarkeWright.twoOpt(); // Uruchomienie algorytmu 2-opt
+			clarkeWright2OptDiff = algorithmClarkeWright.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
+			algorithm.setTrucks(algorithmClarkeWright.getTrucks());
+			drawTruckRoutes = true;
+		}
+		ImGui::SameLine();
+		ImGui::Text("Algorithm Clarke-Wright 2-opt");
+		ImGui::SameLine();
+		ImGui::InputDouble("##ClarkeWright2OptDiff", &clarkeWright2OptDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
 		ImGui::SameLine();
 		ImGui::Text("(difference from optimum)");
 

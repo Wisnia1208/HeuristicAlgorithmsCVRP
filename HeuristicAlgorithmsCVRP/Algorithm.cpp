@@ -2,9 +2,10 @@
 #include <cmath>
 #include <algorithm>
 
-void Algorithm::set(const std::vector<Node> nodes, const std::vector<Truck> trucks) {
+void Algorithm::set(const std::vector<Node> nodes, const std::vector<Truck> trucks, int depotIndex) {
 	this->nodes = nodes;
 	this->trucks = trucks;
+	this->depotIndex = depotIndex;
 }
 
 double Algorithm::getSumOfRoutes() const {
@@ -51,14 +52,27 @@ void Algorithm::twoOpt() {
                     // Oblicz d³ugoœæ trasy po zamianie
                     double newDistance = truck.getRouteLength();
 
-                    // Jeœli nowa trasa jest lepsza, zachowaj zmiany
-                    if (newDistance < oldDistance) {
+                    // SprawdŸ, czy nowa trasa spe³nia ograniczenie ³adunku
+                    int totalDemand = 0;
+                    for (const auto& point : truck.getRoute()) {
+                        // ZnajdŸ zapotrzebowanie punktu w `nodes`
+                        auto it = std::find_if(nodes.begin(), nodes.end(), [&](const Node& node) {
+                            return node.getCoordinates().x == point.x && node.getCoordinates().y == point.y;
+                            });
+
+                        if (it != nodes.end()) {
+                            totalDemand += it->getDemand();
+                        }
+                    }
+
+                    // Jeœli nowa trasa jest lepsza i spe³nia ograniczenie ³adunku, zachowaj zmiany
+                    if (newDistance < oldDistance && totalDemand <= truck.getLoad()) {
                         sumOfallRoutes -= oldDistance;
                         sumOfallRoutes += newDistance;
                         improvement = true;
                     }
                     else {
-                        // Przywróæ oryginaln¹ trasê, jeœli zmiana nie jest korzystna
+                        // Przywróæ oryginaln¹ trasê, jeœli zmiana nie jest korzystna lub przekracza ³adunek
                         truck.swapRoute(i, j);
                     }
                 }
