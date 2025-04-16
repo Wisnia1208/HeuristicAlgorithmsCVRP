@@ -207,6 +207,15 @@ int main() {
 				std::string filePath = "input_files/" + vrpFiles[selectedFileIndex];
 				if (experiment.loadFromFile(filePath)) {
 					drawTruckRoutes = false; // Resetowanie flagi przed nowym wczytaniem
+
+					// Zerowanie wszystkich zmiennych typu diff
+					/*randomClientsDiff = 0.0f;
+					randomClients2OptDiff = 0.0f;
+					greedyDiff = 0.0f;
+					greedy2OptDiff = 0.0f;
+					clarkeWrightDiff = 0.0f;
+					clarkeWright2OptDiff = 0.0f;*/
+					//te wszystktkie trzeba by zadeklarować wczesniej żeby to działało
 					//isFileLoaded = true;
 					//std::cout << "File loaded succesfully: " << filePath << std::endl;
 				}
