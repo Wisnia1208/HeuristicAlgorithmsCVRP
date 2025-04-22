@@ -5,6 +5,10 @@
 
 AlgorithmSimulatedAnnealing::AlgorithmSimulatedAnnealing() : Algorithm() {}
 
+void AlgorithmSimulatedAnnealing::set(const Experiment experiment) {
+	Algorithm::set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+}
+
 void AlgorithmSimulatedAnnealing::solveStartingWithClarkeWrightAlgorithm() {
 	// U¿ycie AlgorithmGreedy do wygenerowania pocz¹tkowego rozwi¹zania
 	AlgorithmClarkeWright algorithmClarkeWright;

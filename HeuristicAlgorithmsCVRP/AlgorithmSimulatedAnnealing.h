@@ -1,5 +1,6 @@
 #pragma once
 #include "Algorithm.h"
+#include "Experiment.h"
 class AlgorithmSimulatedAnnealing :
     public Algorithm
 {
@@ -11,5 +12,6 @@ public:
 	double calculateFitness(const std::vector<Truck>& trucks);
 	std::vector<Truck> generateNeighbor(const std::vector<Truck>& currentSolution);
 	double acceptanceProbability(double bestCost, double newCost, double temperature);
+	void set(const Experiment experiment);
 };
 
