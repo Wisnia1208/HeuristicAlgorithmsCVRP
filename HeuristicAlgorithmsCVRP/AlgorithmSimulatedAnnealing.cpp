@@ -5,10 +5,6 @@
 
 AlgorithmSimulatedAnnealing::AlgorithmSimulatedAnnealing() : Algorithm() {}
 
-void AlgorithmSimulatedAnnealing::set(const Experiment experiment) {
-	Algorithm::set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
-}
-
 void AlgorithmSimulatedAnnealing::solveStartingWithClarkeWrightAlgorithm() {
 	// U¿ycie AlgorithmGreedy do wygenerowania pocz¹tkowego rozwi¹zania
 	AlgorithmClarkeWright algorithmClarkeWright;
@@ -74,7 +70,6 @@ void AlgorithmSimulatedAnnealing::solveStartingWithGreedyAlgorithm() {
 	greedyAlgorithm.set(nodes, trucks, depotIndex);
 	greedyAlgorithm.solve();
 	std::vector<Truck> currentSolution = greedyAlgorithm.getTrucks();
-
 	
 	// Implementacja algorytmu symulowanego wy¿arzania
 	double initialTemperature = 10000.0;
