@@ -42,7 +42,6 @@ void AlgorithmSimulatedAnnealing::solveStartingWithRandomClientsAlgorithm() {
 	algorithmRandomClients.solve();
 	std::vector<Truck> currentSolution = algorithmRandomClients.getTrucks();
 
-
 	// Implementacja algorytmu symulowanego wy¿arzania
 	double initialTemperature = 10000.0;
 	double coolingRate = 0.999;
