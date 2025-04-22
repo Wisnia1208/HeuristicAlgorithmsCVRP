@@ -139,6 +139,7 @@
     <ClCompile Include="AlgorithmClarkeWright.cpp" />
     <ClCompile Include="AlgorithmGreedy.cpp" />
     <ClCompile Include="AlgorithmRandomClients.cpp" />
+    <ClCompile Include="AlgorithmSimulatedAnnealing.cpp" />
     <ClCompile Include="Experiment.cpp" />
     <ClCompile Include="HeuristicAlgorithmsCVRP.cpp" />
     <ClCompile Include="Node.cpp" />
@@ -152,12 +153,14 @@
     <ClCompile Include="third_party\imgui\imgui_tables.cpp" />
     <ClCompile Include="third_party\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Truck.cpp" />
+    <ClCompile Include="Vec2D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm.h" />
     <ClInclude Include="AlgorithmClarkeWright.h" />
     <ClInclude Include="AlgorithmGreedy.h" />
     <ClInclude Include="AlgorithmRandomClients.h" />
+    <ClInclude Include="AlgorithmSimulatedAnnealing.h" />
     <ClInclude Include="Experiment.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="third_party\imgui\backends\imgui_impl_glfw.h" />
@@ -175,6 +178,7 @@
     <ClInclude Include="third_party\imgui\imstb_textedit.h" />
     <ClInclude Include="third_party\imgui\imstb_truetype.h" />
     <ClInclude Include="Truck.h" />
+    <ClInclude Include="Vec2D.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="third_party\imgui\backends\imgui_impl_osx.mm" />

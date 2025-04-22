@@ -7,6 +7,7 @@
 #include "AlgorithmRandomClients.h"
 #include "AlgorithmGreedy.h"
 #include "AlgorithmClarkeWright.h"
+#include "AlgorithmSimulatedAnnealing.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -164,6 +165,7 @@ int main() {
 	AlgorithmRandomClients algorithmRandomClients;
 	AlgorithmGreedy algorithmGreedy;
 	AlgorithmClarkeWright algorithmClarkeWright;
+	AlgorithmSimulatedAnnealing algorithmSimulatedAnnealing;
 	bool drawTruckRoutes = false; // Flaga kontrolująca rysowanie tras
 	//bool isFileLoaded = false; // Flaga informująca, czy plik został wczytany
 
@@ -385,6 +387,54 @@ int main() {
 		ImGui::Text("Algorithm Clarke-Wright 2-opt");
 		ImGui::SameLine();
 		ImGui::InputDouble("##ClarkeWright2OptDiff", &clarkeWright2OptDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
+		ImGui::SameLine();
+		ImGui::Text("(difference from optimum)");
+
+		// Algorytm Simulated Annealing with Random Clients
+		static double simulatedAnnealingRandomClientsDiff = 0.0f; // Przechowuje sumę ścieżek dla Simulated Annealing with Random Clients
+		if (ImGui::Button("Run##SimulatedAnnealingRandomClients")) {
+			algorithmSimulatedAnnealing.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+			algorithmSimulatedAnnealing.solveStartingWithRandomClientsAlgorithm();
+			simulatedAnnealingRandomClientsDiff = algorithmSimulatedAnnealing.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
+			algorithm.setTrucks(algorithmSimulatedAnnealing.getTrucks());
+			drawTruckRoutes = true;
+		}
+		ImGui::SameLine();
+		ImGui::Text("Algorithm Simulated Annealing with Random Clients");
+		ImGui::SameLine();
+		ImGui::InputDouble("##SimulatedAnnealingRandomClientsDiff", &simulatedAnnealingRandomClientsDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
+		ImGui::SameLine();
+		ImGui::Text("(difference from optimum)");
+
+		// Algorytm Simulated Annealing with Greedy
+		static double simulatedAnnealingGreedyDiff = 0.0f; // Przechowuje sumę ścieżek dla Simulated Annealing with Greedy
+		if (ImGui::Button("Run##SimulatedAnnealingGreedy")) {
+			algorithmSimulatedAnnealing.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+			algorithmSimulatedAnnealing.solveStartingWithGreedyAlgorithm();
+			simulatedAnnealingGreedyDiff = algorithmSimulatedAnnealing.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
+			algorithm.setTrucks(algorithmSimulatedAnnealing.getTrucks());
+			drawTruckRoutes = true;
+		}
+		ImGui::SameLine();
+		ImGui::Text("Algorithm Simulated Annealing with Greedy");
+		ImGui::SameLine();
+		ImGui::InputDouble("##SimulatedAnnealingGreedyDiff", &simulatedAnnealingGreedyDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
+		ImGui::SameLine();
+		ImGui::Text("(difference from optimum)");
+
+		// Algorytm Simulated Annealing with Clarke-Wright
+		static double simulatedAnnealingClarkeWrightDiff = 0.0f; // Przechowuje sumę ścieżek dla Simulated Annealing with Clarke-Wright
+		if (ImGui::Button("Run##SimulatedAnnealingClarkeWright")) {
+			algorithmSimulatedAnnealing.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+			algorithmSimulatedAnnealing.solveStartingWithClarkeWrightAlgorithm();
+			simulatedAnnealingClarkeWrightDiff = algorithmSimulatedAnnealing.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
+			algorithm.setTrucks(algorithmSimulatedAnnealing.getTrucks());
+			drawTruckRoutes = true;
+		}
+		ImGui::SameLine();
+		ImGui::Text("Algorithm Simulated Annealing with Clarke-Wright");
+		ImGui::SameLine();
+		ImGui::InputDouble("##SimulatedAnnealingClarkeWrightDiff", &simulatedAnnealingClarkeWrightDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
 		ImGui::SameLine();
 		ImGui::Text("(difference from optimum)");
 

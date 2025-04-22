@@ -37,4 +37,5 @@ public:
     int getDepot() const;
     const std::vector<Truck>& getTrucks() const;
     double getOptimalValue() const;
+	Node getNodeByCoordinates(int x, int y) const;
 };

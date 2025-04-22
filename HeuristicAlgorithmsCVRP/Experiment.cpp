@@ -100,6 +100,15 @@ bool Experiment::loadFromFile(const std::string& filePath)
     return true;
 }
 
+// Metoda do uzyskania wêz³a na podstawie wspó³rzêdnych
+Node Experiment::getNodeByCoordinates(int x, int y) const {
+	for (const auto& node : nodes) {
+		if (node.getCoordinates().x == x && node.getCoordinates().y == y) {
+			return node;
+		}
+	}
+}
+
 // Gettery
 const std::string& Experiment::getName() const { return name; }
 const std::string& Experiment::getComment() const { return comment; }
