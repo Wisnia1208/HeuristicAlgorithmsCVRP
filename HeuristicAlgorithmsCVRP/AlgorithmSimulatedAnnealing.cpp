@@ -5,6 +5,10 @@
 
 AlgorithmSimulatedAnnealing::AlgorithmSimulatedAnnealing() : Algorithm() {}
 
+void AlgorithmSimulatedAnnealing::setExperiment(const Experiment& experiment) {
+	this->experiment = experiment;
+}
+
 void AlgorithmSimulatedAnnealing::solveStartingWithClarkeWrightAlgorithm() {
 	// U¿ycie AlgorithmGreedy do wygenerowania pocz¹tkowego rozwi¹zania
 	AlgorithmClarkeWright algorithmClarkeWright;
@@ -14,8 +18,8 @@ void AlgorithmSimulatedAnnealing::solveStartingWithClarkeWrightAlgorithm() {
 
 
 	// Implementacja algorytmu symulowanego wy¿arzania
-	double initialTemperature = 10000.0;
-	double coolingRate = 0.999;
+	double initialTemperature = 1000.0;
+	double coolingRate = 0.995;
 	double temperature = initialTemperature;
 	std::vector<Truck> bestSolution = currentSolution;
 	double bestCost = calculateFitness(bestSolution);
@@ -43,8 +47,8 @@ void AlgorithmSimulatedAnnealing::solveStartingWithRandomClientsAlgorithm() {
 	std::vector<Truck> currentSolution = algorithmRandomClients.getTrucks();
 
 	// Implementacja algorytmu symulowanego wy¿arzania
-	double initialTemperature = 10000.0;
-	double coolingRate = 0.999;
+	double initialTemperature = 1000.0;
+	double coolingRate = 0.995;
 	double temperature = initialTemperature;
 	std::vector<Truck> bestSolution = currentSolution;
 	double bestCost = calculateFitness(bestSolution);
@@ -72,8 +76,8 @@ void AlgorithmSimulatedAnnealing::solveStartingWithGreedyAlgorithm() {
 	std::vector<Truck> currentSolution = greedyAlgorithm.getTrucks();
 	
 	// Implementacja algorytmu symulowanego wy¿arzania
-	double initialTemperature = 10000.0;
-	double coolingRate = 0.999;
+	double initialTemperature = 1000.0;
+	double coolingRate = 0.995;
 	double temperature = initialTemperature;
 	std::vector<Truck> bestSolution = currentSolution;
 	double bestCost = calculateFitness(bestSolution);
@@ -104,6 +108,7 @@ double AlgorithmSimulatedAnnealing::calculateFitness(const std::vector<Truck>& t
 std::vector<Truck> AlgorithmSimulatedAnnealing::generateNeighbor(const std::vector<Truck>& currentSolution) {
 	std::vector<Truck> newSolution = currentSolution;
 
+	/*
 	// Wybierz losow¹ ciê¿arówkê
 	int truckIndex = rand() % newSolution.size();
 
@@ -120,7 +125,37 @@ std::vector<Truck> AlgorithmSimulatedAnnealing::generateNeighbor(const std::vect
 
 		// Zamieñ wylosowane punkty w trasie
 		newSolution[truckIndex].swapRoute(nodeIndex1, nodeIndex2);
+	}*/
+
+	//tutaj dodaæ zamienianie dwóch punktów w ró¿nych ciê¿arówkach
+	int truckIndex1 = rand() % newSolution.size();
+	int truckIndex2 = rand() % newSolution.size();
+	while (truckIndex1 == truckIndex2) {
+		truckIndex2 = rand() % newSolution.size();
 	}
+
+	int nodeIndex1 = (rand() % (newSolution[truckIndex1].getRoute().size() - 2)) + 1;
+	int nodeIndex2 = (rand() % (newSolution[truckIndex2].getRoute().size() - 2)) + 1;
+
+	if (newSolution[truckIndex1].getRoute().size() <= 2 || newSolution[truckIndex2].getRoute().size() <= 2) {
+		return newSolution; // Nie mo¿na zamieniæ punktów
+	}
+
+	if (newSolution[truckIndex1].getLoad() -
+		experiment.getNodeByCoordinates(newSolution[truckIndex2].getRoute()[nodeIndex2].x, newSolution[truckIndex2].getRoute()[nodeIndex2].y).getDemand() +
+		experiment.getNodeByCoordinates(newSolution[truckIndex1].getRoute()[nodeIndex1].x, newSolution[truckIndex1].getRoute()[nodeIndex1].y).getDemand() > 0
+		&&
+		newSolution[truckIndex2].getLoad() -
+		experiment.getNodeByCoordinates(newSolution[truckIndex1].getRoute()[nodeIndex1].x, newSolution[truckIndex1].getRoute()[nodeIndex1].y).getDemand() +
+		experiment.getNodeByCoordinates(newSolution[truckIndex2].getRoute()[nodeIndex2].x, newSolution[truckIndex2].getRoute()[nodeIndex2].y).getDemand() > 0)
+	{
+		std::vector<ImVec2> tempRoute1 = newSolution[truckIndex1].getRoute();
+		std::vector<ImVec2> tempRoute2 = newSolution[truckIndex2].getRoute();
+		std::swap(tempRoute1[nodeIndex1], tempRoute2[nodeIndex2]);
+		newSolution[truckIndex1].setRoute(tempRoute1);
+		newSolution[truckIndex2].setRoute(tempRoute2);
+	}
+
 
 	return newSolution;
 }

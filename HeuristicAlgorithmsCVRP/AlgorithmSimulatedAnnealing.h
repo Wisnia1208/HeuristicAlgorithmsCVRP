@@ -16,5 +16,6 @@ public:
 	double calculateFitness(const std::vector<Truck>& trucks);
 	std::vector<Truck> generateNeighbor(const std::vector<Truck>& currentSolution);
 	double acceptanceProbability(double bestCost, double newCost, double temperature);
+	void setExperiment(const Experiment& experiment);
 };
 

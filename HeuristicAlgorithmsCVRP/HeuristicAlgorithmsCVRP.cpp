@@ -394,6 +394,7 @@ int main() {
 		static double simulatedAnnealingRandomClientsDiff = 0.0f; // Przechowuje sumę ścieżek dla Simulated Annealing with Random Clients
 		if (ImGui::Button("Run##SimulatedAnnealingRandomClients")) {
 			algorithmSimulatedAnnealing.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+			algorithmSimulatedAnnealing.setExperiment(experiment);
 			algorithmSimulatedAnnealing.solveStartingWithRandomClientsAlgorithm();
 			simulatedAnnealingRandomClientsDiff = algorithmSimulatedAnnealing.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
 			algorithm.setTrucks(algorithmSimulatedAnnealing.getTrucks());
@@ -410,6 +411,7 @@ int main() {
 		static double simulatedAnnealingGreedyDiff = 0.0f; // Przechowuje sumę ścieżek dla Simulated Annealing with Greedy
 		if (ImGui::Button("Run##SimulatedAnnealingGreedy")) {
 			algorithmSimulatedAnnealing.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+			algorithmSimulatedAnnealing.setExperiment(experiment);
 			algorithmSimulatedAnnealing.solveStartingWithGreedyAlgorithm();
 			simulatedAnnealingGreedyDiff = algorithmSimulatedAnnealing.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
 			algorithm.setTrucks(algorithmSimulatedAnnealing.getTrucks());
@@ -426,6 +428,7 @@ int main() {
 		static double simulatedAnnealingClarkeWrightDiff = 0.0f; // Przechowuje sumę ścieżek dla Simulated Annealing with Clarke-Wright
 		if (ImGui::Button("Run##SimulatedAnnealingClarkeWright")) {
 			algorithmSimulatedAnnealing.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+			algorithmSimulatedAnnealing.setExperiment(experiment);
 			algorithmSimulatedAnnealing.solveStartingWithClarkeWrightAlgorithm();
 			simulatedAnnealingClarkeWrightDiff = algorithmSimulatedAnnealing.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
 			algorithm.setTrucks(algorithmSimulatedAnnealing.getTrucks());
