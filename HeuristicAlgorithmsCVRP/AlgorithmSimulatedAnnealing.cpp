@@ -18,7 +18,7 @@ void AlgorithmSimulatedAnnealing::solveStartingWithClarkeWrightAlgorithm() {
 
 
 	// Implementacja algorytmu symulowanego wy¿arzania
-	double initialTemperature = 10000.0;
+	double initialTemperature = 1000.0;
 	double coolingRate = 0.999;
 	double temperature = initialTemperature;
 	std::vector<Truck> bestSolution = currentSolution;
@@ -47,7 +47,7 @@ void AlgorithmSimulatedAnnealing::solveStartingWithRandomClientsAlgorithm() {
 	std::vector<Truck> currentSolution = algorithmRandomClients.getTrucks();
 
 	// Implementacja algorytmu symulowanego wy¿arzania
-	double initialTemperature = 100000.0;
+	double initialTemperature = 1000.0;
 	double coolingRate = 0.999;
 	double temperature = initialTemperature;
 	std::vector<Truck> bestSolution = currentSolution;
@@ -76,7 +76,7 @@ void AlgorithmSimulatedAnnealing::solveStartingWithGreedyAlgorithm() {
 	std::vector<Truck> currentSolution = greedyAlgorithm.getTrucks();
 	
 	// Implementacja algorytmu symulowanego wy¿arzania
-	double initialTemperature = 10000.0;
+	double initialTemperature = 1000.0;
 	double coolingRate = 0.999;
 	double temperature = initialTemperature;
 	std::vector<Truck> bestSolution = currentSolution;
