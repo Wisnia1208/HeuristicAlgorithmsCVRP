@@ -56,7 +56,7 @@ void AlgorithmTabuSearch::solveStartingWithGreedyAlgorithm() {
 	algorithmGreedy.solve();
 	std::vector<Truck> currentSolution = algorithmGreedy.getTrucks();
 	// Implementacja algorytmu tabu search
-	int maxIterations = 10000;
+	int maxIterations = 1000;
 	int tabuTenure = 10;
 	std::unordered_set<std::vector<Truck>> tabuList;
 	std::vector<Truck> bestSolution = currentSolution;
@@ -91,7 +91,7 @@ void AlgorithmTabuSearch::solveStartingWithClarkeWrightAlgorithm() {
 	algorithmClarkeWright.solve();
 	std::vector<Truck> currentSolution = algorithmClarkeWright.getTrucks();
 	// Implementacja algorytmu tabu search
-	int maxIterations = 10000;
+	int maxIterations = 1000;
 	int tabuTenure = 10;
 	std::unordered_set<std::vector<Truck>> tabuList;
 	std::vector<Truck> bestSolution = currentSolution;
