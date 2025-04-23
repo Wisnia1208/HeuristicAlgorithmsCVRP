@@ -18,8 +18,8 @@ void AlgorithmSimulatedAnnealing::solveStartingWithClarkeWrightAlgorithm() {
 
 
 	// Implementacja algorytmu symulowanego wy¿arzania
-	double initialTemperature = 1000.0;
-	double coolingRate = 0.995;
+	double initialTemperature = 10000.0;
+	double coolingRate = 0.999;
 	double temperature = initialTemperature;
 	std::vector<Truck> bestSolution = currentSolution;
 	double bestCost = calculateFitness(bestSolution);
@@ -47,8 +47,8 @@ void AlgorithmSimulatedAnnealing::solveStartingWithRandomClientsAlgorithm() {
 	std::vector<Truck> currentSolution = algorithmRandomClients.getTrucks();
 
 	// Implementacja algorytmu symulowanego wy¿arzania
-	double initialTemperature = 1000.0;
-	double coolingRate = 0.995;
+	double initialTemperature = 100000.0;
+	double coolingRate = 0.999;
 	double temperature = initialTemperature;
 	std::vector<Truck> bestSolution = currentSolution;
 	double bestCost = calculateFitness(bestSolution);
@@ -76,8 +76,8 @@ void AlgorithmSimulatedAnnealing::solveStartingWithGreedyAlgorithm() {
 	std::vector<Truck> currentSolution = greedyAlgorithm.getTrucks();
 	
 	// Implementacja algorytmu symulowanego wy¿arzania
-	double initialTemperature = 1000.0;
-	double coolingRate = 0.995;
+	double initialTemperature = 10000.0;
+	double coolingRate = 0.999;
 	double temperature = initialTemperature;
 	std::vector<Truck> bestSolution = currentSolution;
 	double bestCost = calculateFitness(bestSolution);
@@ -108,61 +108,146 @@ double AlgorithmSimulatedAnnealing::calculateFitness(const std::vector<Truck>& t
 std::vector<Truck> AlgorithmSimulatedAnnealing::generateNeighbor(const std::vector<Truck>& currentSolution) {
 	std::vector<Truck> newSolution = currentSolution;
 
-	/*
-	// Wybierz losow¹ ciê¿arówkê
-	int truckIndex = rand() % newSolution.size();
-
-	// SprawdŸ, czy trasa ciê¿arówki ma wystarczaj¹c¹ liczbê punktów (co najmniej 3)
-	if (newSolution[truckIndex].getRoute().size() > 2) {
-		// Wybierz dwa ró¿ne indeksy w zakresie od 1 do size - 2
-		int nodeIndex1 = (rand() % (newSolution[truckIndex].getRoute().size() - 2)) + 1;
-		int nodeIndex2 = (rand() % (newSolution[truckIndex].getRoute().size() - 2)) + 1;
-
-		// Upewnij siê, ¿e indeksy s¹ ró¿ne
-		while (nodeIndex1 == nodeIndex2) {
-			nodeIndex2 = (rand() % (newSolution[truckIndex].getRoute().size() - 2)) + 1;
-		}
-
-		// Zamieñ wylosowane punkty w trasie
-		newSolution[truckIndex].swapRoute(nodeIndex1, nodeIndex2);
-	}*/
-
-	//tutaj dodaæ zamienianie dwóch punktów w ró¿nych ciê¿arówkach
-	int truckIndex1 = rand() % newSolution.size();
-	int truckIndex2 = rand() % newSolution.size();
-	while (truckIndex1 == truckIndex2) {
-		truckIndex2 = rand() % newSolution.size();
-	}
-
-	int nodeIndex1 = (rand() % (newSolution[truckIndex1].getRoute().size() - 2)) + 1;
-	int nodeIndex2 = (rand() % (newSolution[truckIndex2].getRoute().size() - 2)) + 1;
-
-	if (newSolution[truckIndex1].getRoute().size() <= 2 || newSolution[truckIndex2].getRoute().size() <= 2) {
-		return newSolution; // Nie mo¿na zamieniæ punktów
-	}
-
-	if (newSolution[truckIndex1].getLoad() -
-		getNodeDemand(newSolution[truckIndex2].getRoute()[nodeIndex2].x, newSolution[truckIndex2].getRoute()[nodeIndex2].y) +
-		getNodeDemand(newSolution[truckIndex1].getRoute()[nodeIndex1].x, newSolution[truckIndex1].getRoute()[nodeIndex1].y) > 0
-		&&
-		newSolution[truckIndex2].getLoad() -
-		getNodeDemand(newSolution[truckIndex1].getRoute()[nodeIndex1].x, newSolution[truckIndex1].getRoute()[nodeIndex1].y) +
-		getNodeDemand(newSolution[truckIndex2].getRoute()[nodeIndex2].x, newSolution[truckIndex2].getRoute()[nodeIndex2].y) > 0)
+	for (int i = 0; i < 100; i++)
 	{
-		std::vector<ImVec2> tempRoute1 = newSolution[truckIndex1].getRoute();
-		std::vector<ImVec2> tempRoute2 = newSolution[truckIndex2].getRoute();
-		std::swap(tempRoute1[nodeIndex1], tempRoute2[nodeIndex2]);
-		newSolution[truckIndex1].setLoad(newSolution[truckIndex1].getLoad() -
-			getNodeDemand(tempRoute2[nodeIndex2].x, tempRoute2[nodeIndex2].y) +
-			getNodeDemand(tempRoute1[nodeIndex1].x, tempRoute1[nodeIndex1].y));
-		newSolution[truckIndex2].setLoad(newSolution[truckIndex2].getLoad() -
-			getNodeDemand(tempRoute1[nodeIndex1].x, tempRoute1[nodeIndex1].y) +
-			getNodeDemand(tempRoute2[nodeIndex2].x, tempRoute2[nodeIndex2].y));
-		newSolution[truckIndex1].setRoute(tempRoute1);
-		newSolution[truckIndex2].setRoute(tempRoute2);
+		int approach = rand() % 4; // Wybierz losowe podejœcie do generowania s¹siada
+
+		switch (approach) {
+		case 0: {
+			// zamieñ dwa punkty w tej samej ciê¿arówce
+			// Wybierz losow¹ ciê¿arówkê
+			int truckIndex = rand() % newSolution.size();
+
+			// SprawdŸ, czy trasa ciê¿arówki ma wystarczaj¹c¹ liczbê punktów (co najmniej 4)
+			if (newSolution[truckIndex].getRoute().size() > 3) {
+				// Wybierz dwa ró¿ne indeksy w zakresie od 1 do size - 2
+				int nodeIndex1 = (rand() % (newSolution[truckIndex].getRoute().size() - 2)) + 1;
+				int nodeIndex2 = (rand() % (newSolution[truckIndex].getRoute().size() - 2)) + 1;
+
+				// Upewnij siê, ¿e indeksy s¹ ró¿ne
+				while (nodeIndex1 == nodeIndex2) {
+					nodeIndex2 = (rand() % (newSolution[truckIndex].getRoute().size() - 2)) + 1;
+				}
+
+				// Zamieñ wylosowane punkty w trasie
+				newSolution[truckIndex].swapRoute(nodeIndex1, nodeIndex2);
+				break;
+			}
+		}
+		case 1: {
+			int truckIndex1 = rand() % newSolution.size();
+			while (newSolution[truckIndex1].getRoute().size() < 3) {
+				truckIndex1 = rand() % newSolution.size();
+			}
+			int truckIndex2 = rand() % newSolution.size();
+			while (truckIndex1 == truckIndex2 or newSolution[truckIndex2].getRoute().size() < 3) {
+				truckIndex2 = rand() % newSolution.size();
+			}
+
+			int nodeIndex1 = (rand() % (newSolution[truckIndex1].getRoute().size() - 2)) + 1;
+			int nodeIndex2 = (rand() % (newSolution[truckIndex2].getRoute().size() - 2)) + 1;
+
+			if (newSolution[truckIndex1].getRoute().size() <= 2 || newSolution[truckIndex2].getRoute().size() <= 2) {
+				return newSolution; // Nie mo¿na zamieniæ punktów
+			}
+
+			if (newSolution[truckIndex1].getLoad() -
+				getNodeDemand(newSolution[truckIndex2].getRoute()[nodeIndex2].x, newSolution[truckIndex2].getRoute()[nodeIndex2].y) +
+				getNodeDemand(newSolution[truckIndex1].getRoute()[nodeIndex1].x, newSolution[truckIndex1].getRoute()[nodeIndex1].y) > 0
+				&&
+				newSolution[truckIndex2].getLoad() -
+				getNodeDemand(newSolution[truckIndex1].getRoute()[nodeIndex1].x, newSolution[truckIndex1].getRoute()[nodeIndex1].y) +
+				getNodeDemand(newSolution[truckIndex2].getRoute()[nodeIndex2].x, newSolution[truckIndex2].getRoute()[nodeIndex2].y) > 0)
+			{
+				std::vector<ImVec2> tempRoute1 = newSolution[truckIndex1].getRoute();
+				std::vector<ImVec2> tempRoute2 = newSolution[truckIndex2].getRoute();
+				std::swap(tempRoute1[nodeIndex1], tempRoute2[nodeIndex2]);
+				newSolution[truckIndex1].setLoad(newSolution[truckIndex1].getLoad() +
+					getNodeDemand(tempRoute2[nodeIndex2].x, tempRoute2[nodeIndex2].y) -
+					getNodeDemand(tempRoute1[nodeIndex1].x, tempRoute1[nodeIndex1].y));
+				newSolution[truckIndex2].setLoad(newSolution[truckIndex2].getLoad() +
+					getNodeDemand(tempRoute1[nodeIndex1].x, tempRoute1[nodeIndex1].y) -
+					getNodeDemand(tempRoute2[nodeIndex2].x, tempRoute2[nodeIndex2].y));
+				newSolution[truckIndex1].setRoute(tempRoute1);
+				newSolution[truckIndex2].setRoute(tempRoute2);
+				break;
+			}
+		}
+		case 2: {
+			//zabierz punkt z jednej trasy i wsadŸ go do drugiej
+			// Wybierz losow¹ ciê¿arówkê
+			int truckIndex1 = rand() % newSolution.size();
+
+			// SprawdŸ, czy trasa ciê¿arówki ma wystarczaj¹c¹ liczbê punktów (co najmniej 2)
+			while (newSolution[truckIndex1].getRoute().size() < 3) {
+				truckIndex1 = rand() % newSolution.size();
+			}
+			int nodeIndex1 = (rand() % (newSolution[truckIndex1].getRoute().size() - 2)) + 1;
+
+			int demand = getNodeDemand(newSolution[truckIndex1].getRoute()[nodeIndex1].x, newSolution[truckIndex1].getRoute()[nodeIndex1].y);
+
+			// Zbierz wszystkie ciê¿arówki, które mog¹ przyj¹æ punkt
+			std::vector<int> eligibleTrucks;
+			for (size_t i = 0; i < newSolution.size(); ++i) {
+				if (i != truckIndex1 && newSolution[i].getLoad() >= demand) {
+					eligibleTrucks.push_back(i);
+				}
+			}
+
+			// Jeœli nie ma ¿adnej ciê¿arówki, która mo¿e przyj¹æ punkt, zwróæ niezmienione rozwi¹zanie
+			if (eligibleTrucks.empty()) {
+				return newSolution;
+			}
+
+			int truckIndex2 = rand() % newSolution.size();
+			while (truckIndex1 == truckIndex2 || newSolution[truckIndex2].getLoad() < demand) {
+				truckIndex2 = rand() % newSolution.size();
+			}
+
+			int nodeIndex2 = 0; // WskaŸnik na pozycjê w trasie ciê¿arówki docelowej
+			// Wylosuj pozycjê w trasie ciê¿arówki docelowej
+			if (newSolution[truckIndex2].getRoute().size() == 2) {
+				nodeIndex2 = 1; // Jeœli trasa ma tylko dwa punkty, wstaw punkt na drug¹ pozycjê
+			}
+			else {
+				nodeIndex2 = (rand() % (newSolution[truckIndex2].getRoute().size() - 2)) + 1;
+			}
+
+			// Zaktualizuj ³adunki ciê¿arówek
+			newSolution[truckIndex1].setLoad(newSolution[truckIndex1].getLoad() + demand);
+			newSolution[truckIndex2].setLoad(newSolution[truckIndex2].getLoad() - demand);
+
+			// Przenieœ punkt z jednej trasy do drugiej
+			newSolution[truckIndex2].route.insert(newSolution[truckIndex2].route.begin() + nodeIndex2, newSolution[truckIndex1].getRoute()[nodeIndex1]);
+			newSolution[truckIndex1].route.erase(newSolution[truckIndex1].route.begin() + nodeIndex1);
+			break;
+		}
+		case 3: {
+			//lustrzane odbicie
+			// Wybierz losow¹ ciê¿arówkê
+			int truckIndex = rand() % newSolution.size();
+			// SprawdŸ, czy trasa ciê¿arówki ma wystarczaj¹c¹ liczbê punktów (co najmniej 4)
+			while (newSolution[truckIndex].getRoute().size() < 4) {
+				truckIndex = rand() % newSolution.size();
+			}
+			// Wybierz losowy punkt w trasie
+			int nodeIndex1 = (rand() % (newSolution[truckIndex].getRoute().size() - 2)) + 1;
+			int nodeIndex2 = (rand() % (newSolution[truckIndex].getRoute().size() - 2)) + 1;
+			// Upewnij siê, ¿e indeksy s¹ ró¿ne
+			while (nodeIndex1 == nodeIndex2) {
+				nodeIndex2 = (rand() % (newSolution[truckIndex].getRoute().size() - 2)) + 1;
+			}
+			// Zamieñ wylosowane punkty w trasie
+			if (nodeIndex1 > nodeIndex2) {
+				std::reverse(newSolution[truckIndex].route.begin() + nodeIndex2, newSolution[truckIndex].route.begin() + nodeIndex1 + 1);
+			}
+			break;
+		}
+		default:
+			break;
+		}
 	}
-
-
+	
 	return newSolution;
 }
 

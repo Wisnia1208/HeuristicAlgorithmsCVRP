@@ -89,3 +89,12 @@ int Algorithm::getNodeDemand(int x, int y) {
 	}
 	//return 0;
 }
+
+int Algorithm::getNodeDemand(ImVec2 node) {
+	for (const auto& n : nodes) {
+		if (n.getCoordinates().x == node.x && n.getCoordinates().y == node.y) {
+			return n.getDemand();
+		}
+	}
+	return 0;
+}

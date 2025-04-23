@@ -407,6 +407,24 @@ int main() {
 		ImGui::SameLine();
 		ImGui::Text("(difference from optimum)");
 
+		// Algorytm Simulated Annealing with Random Clients 2-opt
+		static double simulatedAnnealingRandomClients2OptDiff = 0.0f; // Przechowuje sumę ścieżek dla Simulated Annealing with Random Clients 2-opt
+		if (ImGui::Button("Run##SimulatedAnnealingRandomClients2Opt")) {
+			algorithmSimulatedAnnealing.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+			algorithmSimulatedAnnealing.setExperiment(experiment);
+			algorithmSimulatedAnnealing.solveStartingWithRandomClientsAlgorithm();
+			algorithmSimulatedAnnealing.twoOpt(); // Uruchomienie algorytmu 2-opt
+			simulatedAnnealingRandomClients2OptDiff = algorithmSimulatedAnnealing.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
+			algorithm.setTrucks(algorithmSimulatedAnnealing.getTrucks());
+			drawTruckRoutes = true;
+		}
+		ImGui::SameLine();
+		ImGui::Text("Algorithm Simulated Annealing with Random Clients 2-opt");
+		ImGui::SameLine();
+		ImGui::InputDouble("##SimulatedAnnealingRandomClients2OptDiff", &simulatedAnnealingRandomClients2OptDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
+		ImGui::SameLine();
+		ImGui::Text("(difference from optimum)");
+
 		// Algorytm Simulated Annealing with Greedy
 		static double simulatedAnnealingGreedyDiff = 0.0f; // Przechowuje sumę ścieżek dla Simulated Annealing with Greedy
 		if (ImGui::Button("Run##SimulatedAnnealingGreedy")) {

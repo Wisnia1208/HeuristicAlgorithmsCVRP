@@ -10,8 +10,8 @@ private:
     int x;       // Wspó³rzêdna X
     int y;       // Wspó³rzêdna Y
     int load;    // Towar
-    std::vector<ImVec2> route; // Droga
 public:
+    std::vector<ImVec2> route; // Droga
     std::vector<Vec2D> routePoints; // Punkty na drodze
     // Konstruktor domyœlny
     Truck();

@@ -18,5 +18,6 @@ public:
 	double calculateDistance(const ImVec2 firstPoint, const ImVec2 secondPoint) const;
 	void twoOpt();
 	int getNodeDemand(int x, int y);
+	int getNodeDemand(ImVec2 node);
 };
 

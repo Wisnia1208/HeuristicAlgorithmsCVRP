@@ -92,6 +92,7 @@ void AlgorithmClarkeWright::solve() {
 	// Obliczenie sumy wszystkich tras
 	sumOfallRoutes = 0;
 	for (auto& truck : trucks) {
+		truck.setLoad(truck.getLoad() - calculateRouteDemand(truck.getRoute()));
 		float routeLength = 0;
 		for (size_t i = 0; i < truck.getRoute().size() - 1; ++i) {
 			routeLength += calculateDistance(truck.getRoute()[i], truck.getRoute()[i + 1]);
@@ -104,6 +105,14 @@ int AlgorithmClarkeWright::calculateRouteDemand(const std::vector<Node> route) {
 	int demand = 0;
 	for (const auto& node : route) {
 		demand += node.getDemand();
+	}
+	return demand;
+}
+
+int AlgorithmClarkeWright::calculateRouteDemand(const std::vector<ImVec2> route) {
+	int demand = 0;
+	for (const auto& point : route) {
+		demand += getNodeDemand(point.x, point.y);
 	}
 	return demand;
 }
