@@ -15,7 +15,7 @@ void AlgorithmTabuSearch::solveStartingWithRandomClientAlgorithm() {
 	std::vector<Truck> currentSolution = algorithmRandom.getTrucks();
 
 	// Implementacja algorytmu tabu search
-	int maxIterations = 10000;
+	int maxIterations = 1000;
 	int tabuTenure = 10;
 	std::unordered_set<std::vector<Truck>> tabuList;
 	std::vector<Truck> bestSolution = currentSolution;
