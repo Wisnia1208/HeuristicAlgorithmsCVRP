@@ -411,6 +411,7 @@ int main() {
 		static double simulatedAnnealingGreedyDiff = 0.0f; // Przechowuje sumę ścieżek dla Simulated Annealing with Greedy
 		if (ImGui::Button("Run##SimulatedAnnealingGreedy")) {
 			algorithmSimulatedAnnealing.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+			//algorithmSimulatedAnnealing.set(experiment.getNodes(), algorithmRandomClients.getTrucks(), experiment.getDepot());
 			algorithmSimulatedAnnealing.setExperiment(experiment);
 			algorithmSimulatedAnnealing.solveStartingWithGreedyAlgorithm();
 			simulatedAnnealingGreedyDiff = algorithmSimulatedAnnealing.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
