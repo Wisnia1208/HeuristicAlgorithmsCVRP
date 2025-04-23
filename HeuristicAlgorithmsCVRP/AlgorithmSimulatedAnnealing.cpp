@@ -107,6 +107,7 @@ double AlgorithmSimulatedAnnealing::calculateFitness(const std::vector<Truck>& t
 
 std::vector<Truck> AlgorithmSimulatedAnnealing::generateNeighbor(const std::vector<Truck>& currentSolution) {
 	std::vector<Truck> newSolution = currentSolution;
+	std::vector<Truck> betterSolution = newSolution;
 
 	for (int i = 0; i < rand()%100; i++)
 	{
@@ -250,6 +251,12 @@ std::vector<Truck> AlgorithmSimulatedAnnealing::generateNeighbor(const std::vect
 		}
 		default:
 			break;
+		}
+		if (calculateFitness(newSolution) < calculateFitness(betterSolution)) {
+			betterSolution = newSolution;
+		}
+		else {
+			newSolution = betterSolution;
 		}
 	}
 	

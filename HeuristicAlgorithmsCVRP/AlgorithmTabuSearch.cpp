@@ -129,8 +129,9 @@ double AlgorithmTabuSearch::calculateFitness(const std::vector<Truck>& trucks) {
 
 std::vector<Truck> AlgorithmTabuSearch::generateNeighbor(const std::vector<Truck>& currentSolution) {
 	std::vector<Truck> newSolution = currentSolution;
+	std::vector<Truck> betterSolution = newSolution;
 
-	for (int i = 0; i < rand()%100; i++)
+	for (int i = 0; i < rand() % 100; i++)
 	{
 		int approach = rand() % 5; // Wybierz losowe podejœcie do generowania s¹siada
 
@@ -157,7 +158,6 @@ std::vector<Truck> AlgorithmTabuSearch::generateNeighbor(const std::vector<Truck
 			}
 		}
 		case 1: {
-			// zamieñ dwa punkty w ró¿nych ciê¿arówkach
 			int truckIndex1 = rand() % newSolution.size();
 			while (newSolution[truckIndex1].getRoute().size() < 3) {
 				truckIndex1 = rand() % newSolution.size();
@@ -273,6 +273,12 @@ std::vector<Truck> AlgorithmTabuSearch::generateNeighbor(const std::vector<Truck
 		}
 		default:
 			break;
+		}
+		if (calculateFitness(newSolution) < calculateFitness(betterSolution)) {
+			betterSolution = newSolution;
+		}
+		else {
+			newSolution = betterSolution;
 		}
 	}
 
