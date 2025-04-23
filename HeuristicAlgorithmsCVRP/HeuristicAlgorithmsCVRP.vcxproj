@@ -140,6 +140,7 @@
     <ClCompile Include="AlgorithmGreedy.cpp" />
     <ClCompile Include="AlgorithmRandomClients.cpp" />
     <ClCompile Include="AlgorithmSimulatedAnnealing.cpp" />
+    <ClCompile Include="AlgorithmTabuSearch.cpp" />
     <ClCompile Include="Experiment.cpp" />
     <ClCompile Include="HeuristicAlgorithmsCVRP.cpp" />
     <ClCompile Include="Node.cpp" />
@@ -161,7 +162,9 @@
     <ClInclude Include="AlgorithmGreedy.h" />
     <ClInclude Include="AlgorithmRandomClients.h" />
     <ClInclude Include="AlgorithmSimulatedAnnealing.h" />
+    <ClInclude Include="AlgorithmTabuSearch.h" />
     <ClInclude Include="Experiment.h" />
+    <ClInclude Include="ImVec2Extensions.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="third_party\imgui\backends\imgui_impl_glfw.h" />
     <ClInclude Include="third_party\imgui\backends\imgui_impl_opengl2.h" />

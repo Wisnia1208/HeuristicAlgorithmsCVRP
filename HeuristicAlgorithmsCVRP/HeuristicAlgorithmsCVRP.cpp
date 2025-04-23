@@ -8,6 +8,7 @@
 #include "AlgorithmGreedy.h"
 #include "AlgorithmClarkeWright.h"
 #include "AlgorithmSimulatedAnnealing.h"
+#include "AlgorithmTabuSearch.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -166,6 +167,7 @@ int main() {
 	AlgorithmGreedy algorithmGreedy;
 	AlgorithmClarkeWright algorithmClarkeWright;
 	AlgorithmSimulatedAnnealing algorithmSimulatedAnnealing;
+	AlgorithmTabuSearch algorithmTabuSearch;
 	bool drawTruckRoutes = false; // Flaga kontrolująca rysowanie tras
 	//bool isFileLoaded = false; // Flaga informująca, czy plik został wczytany
 
@@ -457,6 +459,54 @@ int main() {
 		ImGui::Text("Algorithm Simulated Annealing with Clarke-Wright");
 		ImGui::SameLine();
 		ImGui::InputDouble("##SimulatedAnnealingClarkeWrightDiff", &simulatedAnnealingClarkeWrightDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
+		ImGui::SameLine();
+		ImGui::Text("(difference from optimum)");
+
+		// Algorytm Tabu Search with Random Clients
+		static double tabuSearchRandomClientsDiff = 0.0f; // Przechowuje sumę ścieżek dla Tabu Search with Random Clients
+		if (ImGui::Button("Run##TabuSearchRandomClients")) {
+			algorithmTabuSearch.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+			algorithmTabuSearch.solveStartingWithRandomClientAlgorithm();
+			tabuSearchRandomClientsDiff = algorithmTabuSearch.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
+			algorithm.setTrucks(algorithmTabuSearch.getTrucks());
+			drawTruckRoutes = true;
+		}
+		ImGui::SameLine();
+		ImGui::Text("Algorithm Tabu Search with Random Clients");
+		ImGui::SameLine();
+		ImGui::InputDouble("##TabuSearchRandomClientsDiff", &tabuSearchRandomClientsDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
+		ImGui::SameLine();
+		ImGui::Text("(difference from optimum)");
+
+		// Algorytm Tabu Search with Greedy
+		static double tabuSearchGreedyDiff = 0.0f; // Przechowuje sumę ścieżek dla Tabu Search with Greedy
+		if (ImGui::Button("Run##TabuSearchGreedy")) {
+			algorithmTabuSearch.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+			algorithmTabuSearch.solveStartingWithGreedyAlgorithm();
+			tabuSearchGreedyDiff = algorithmTabuSearch.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
+			algorithm.setTrucks(algorithmTabuSearch.getTrucks());
+			drawTruckRoutes = true;
+		}
+		ImGui::SameLine();
+		ImGui::Text("Algorithm Tabu Search with Greedy");
+		ImGui::SameLine();
+		ImGui::InputDouble("##TabuSearchGreedyDiff", &tabuSearchGreedyDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
+		ImGui::SameLine();
+		ImGui::Text("(difference from optimum)");
+
+		// Algorytm Tabu Search with Clarke-Wright
+		static double tabuSearchClarkeWrightDiff = 0.0f; // Przechowuje sumę ścieżek dla Tabu Search with Clarke-Wright
+		if (ImGui::Button("Run##TabuSearchClarkeWright")) {
+			algorithmTabuSearch.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+			algorithmTabuSearch.solveStartingWithClarkeWrightAlgorithm();
+			tabuSearchClarkeWrightDiff = algorithmTabuSearch.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
+			algorithm.setTrucks(algorithmTabuSearch.getTrucks());
+			drawTruckRoutes = true;
+		}
+		ImGui::SameLine();
+		ImGui::Text("Algorithm Tabu Search with Clarke-Wright");
+		ImGui::SameLine();
+		ImGui::InputDouble("##TabuSearchClarkeWrightDiff", &tabuSearchClarkeWrightDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
 		ImGui::SameLine();
 		ImGui::Text("(difference from optimum)");
 

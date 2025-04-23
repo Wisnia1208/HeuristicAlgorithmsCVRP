@@ -1,103 +1,125 @@
-#include "AlgorithmSimulatedAnnealing.h"
+#include "AlgorithmTabuSearch.h"
 #include "AlgorithmGreedy.h"
 #include "AlgorithmClarkeWright.h"
 #include "AlgorithmRandomClients.h"
 
-AlgorithmSimulatedAnnealing::AlgorithmSimulatedAnnealing() : Algorithm() {}
+AlgorithmTabuSearch::AlgorithmTabuSearch() : Algorithm() {}
 
-void AlgorithmSimulatedAnnealing::setExperiment(const Experiment& experiment) {
-	this->experiment = experiment;
+#include <unordered_set> // std::unordered_set
+
+void AlgorithmTabuSearch::solveStartingWithRandomClientAlgorithm() {
+	// U¿ycie AlgorithmRandomClients do wygenerowania pocz¹tkowego rozwi¹zania
+	AlgorithmRandomClients algorithmRandom;
+	algorithmRandom.set(nodes, trucks, depotIndex);
+	algorithmRandom.solve();
+	std::vector<Truck> currentSolution = algorithmRandom.getTrucks();
+
+	// Implementacja algorytmu tabu search
+	int maxIterations = 10000;
+	int tabuTenure = 10;
+	std::unordered_set<std::vector<Truck>> tabuList;
+	std::vector<Truck> bestSolution = currentSolution;
+	double bestCost = calculateFitness(bestSolution);
+
+	for (int iteration = 0; iteration < maxIterations; ++iteration) {
+		std::vector<Truck> newSolution = generateNeighbor(currentSolution);
+		double newCost = calculateFitness(newSolution);
+
+		// SprawdŸ, czy rozwi¹zanie jest w liœcie tabu
+		if (tabuList.find(newSolution) == tabuList.end()) {
+			currentSolution = newSolution;
+
+			// Aktualizuj najlepsze rozwi¹zanie
+			if (newCost < bestCost) {
+				bestSolution = newSolution;
+				bestCost = newCost;
+			}
+
+			// Dodaj rozwi¹zanie do listy tabu
+			tabuList.insert(newSolution);
+
+			// Usuñ najstarsze rozwi¹zanie, jeœli lista tabu przekracza rozmiar
+			if (tabuList.size() > tabuTenure) {
+				tabuList.erase(tabuList.begin());
+			}
+		}
+	}
+
+	setTrucks(bestSolution);
+	sumOfallRoutes = bestCost;
 }
 
-void AlgorithmSimulatedAnnealing::solveStartingWithClarkeWrightAlgorithm() {
+void AlgorithmTabuSearch::solveStartingWithGreedyAlgorithm() {
 	// U¿ycie AlgorithmGreedy do wygenerowania pocz¹tkowego rozwi¹zania
+	AlgorithmGreedy algorithmGreedy;
+	algorithmGreedy.set(nodes, trucks, depotIndex);
+	algorithmGreedy.solve();
+	std::vector<Truck> currentSolution = algorithmGreedy.getTrucks();
+	// Implementacja algorytmu tabu search
+	int maxIterations = 10000;
+	int tabuTenure = 10;
+	std::unordered_set<std::vector<Truck>> tabuList;
+	std::vector<Truck> bestSolution = currentSolution;
+	double bestCost = calculateFitness(bestSolution);
+	for (int iteration = 0; iteration < maxIterations; ++iteration) {
+		std::vector<Truck> newSolution = generateNeighbor(currentSolution);
+		double newCost = calculateFitness(newSolution);
+		// SprawdŸ, czy rozwi¹zanie jest w liœcie tabu
+		if (tabuList.find(newSolution) == tabuList.end()) {
+			currentSolution = newSolution;
+			// Aktualizuj najlepsze rozwi¹zanie
+			if (newCost < bestCost) {
+				bestSolution = newSolution;
+				bestCost = newCost;
+			}
+			// Dodaj rozwi¹zanie do listy tabu
+			tabuList.insert(newSolution);
+			// Usuñ najstarsze rozwi¹zanie, jeœli lista tabu przekracza rozmiar
+			if (tabuList.size() > tabuTenure) {
+				tabuList.erase(tabuList.begin());
+			}
+		}
+	}
+	setTrucks(bestSolution);
+	sumOfallRoutes = bestCost;
+}
+
+void AlgorithmTabuSearch::solveStartingWithClarkeWrightAlgorithm() {
+	// U¿ycie AlgorithmClarkeWright do wygenerowania pocz¹tkowego rozwi¹zania
 	AlgorithmClarkeWright algorithmClarkeWright;
 	algorithmClarkeWright.set(nodes, trucks, depotIndex);
 	algorithmClarkeWright.solve();
 	std::vector<Truck> currentSolution = algorithmClarkeWright.getTrucks();
-
-
-	// Implementacja algorytmu symulowanego wy¿arzania
-	double initialTemperature = 10000.0;
-	double coolingRate = 0.999;
-	double temperature = initialTemperature;
+	// Implementacja algorytmu tabu search
+	int maxIterations = 10000;
+	int tabuTenure = 10;
+	std::unordered_set<std::vector<Truck>> tabuList;
 	std::vector<Truck> bestSolution = currentSolution;
 	double bestCost = calculateFitness(bestSolution);
-	while (temperature > 1) {
+	for (int iteration = 0; iteration < maxIterations; ++iteration) {
 		std::vector<Truck> newSolution = generateNeighbor(currentSolution);
 		double newCost = calculateFitness(newSolution);
-		if (acceptanceProbability(bestCost, newCost, temperature) > static_cast<double>(rand()) / RAND_MAX) {
+		// SprawdŸ, czy rozwi¹zanie jest w liœcie tabu
+		if (tabuList.find(newSolution) == tabuList.end()) {
 			currentSolution = newSolution;
+			// Aktualizuj najlepsze rozwi¹zanie
 			if (newCost < bestCost) {
 				bestSolution = newSolution;
 				bestCost = newCost;
 			}
+			// Dodaj rozwi¹zanie do listy tabu
+			tabuList.insert(newSolution);
+			// Usuñ najstarsze rozwi¹zanie, jeœli lista tabu przekracza rozmiar
+			if (tabuList.size() > tabuTenure) {
+				tabuList.erase(tabuList.begin());
+			}
 		}
-		temperature *= coolingRate;
 	}
 	setTrucks(bestSolution);
 	sumOfallRoutes = bestCost;
 }
 
-void AlgorithmSimulatedAnnealing::solveStartingWithRandomClientsAlgorithm() {
-	// U¿ycie AlgorithmGreedy do wygenerowania pocz¹tkowego rozwi¹zania
-	AlgorithmRandomClients algorithmRandomClients;
-	algorithmRandomClients.set(nodes, trucks, depotIndex);
-	algorithmRandomClients.solve();
-	std::vector<Truck> currentSolution = algorithmRandomClients.getTrucks();
-
-	// Implementacja algorytmu symulowanego wy¿arzania
-	double initialTemperature = 100000.0;
-	double coolingRate = 0.999;
-	double temperature = initialTemperature;
-	std::vector<Truck> bestSolution = currentSolution;
-	double bestCost = calculateFitness(bestSolution);
-	while (temperature > 1) {
-		std::vector<Truck> newSolution = generateNeighbor(currentSolution);
-		double newCost = calculateFitness(newSolution);
-		if (acceptanceProbability(bestCost, newCost, temperature) > static_cast<double>(rand()) / RAND_MAX) {
-			currentSolution = newSolution;
-			if (newCost < bestCost) {
-				bestSolution = newSolution;
-				bestCost = newCost;
-			}
-		}
-		temperature *= coolingRate;
-	}
-	setTrucks(bestSolution);
-	sumOfallRoutes = bestCost;
-}
-
-void AlgorithmSimulatedAnnealing::solveStartingWithGreedyAlgorithm() {
-	// U¿ycie AlgorithmGreedy do wygenerowania pocz¹tkowego rozwi¹zania
-	AlgorithmGreedy greedyAlgorithm;
-	greedyAlgorithm.set(nodes, trucks, depotIndex);
-	greedyAlgorithm.solve();
-	std::vector<Truck> currentSolution = greedyAlgorithm.getTrucks();
-	
-	// Implementacja algorytmu symulowanego wy¿arzania
-	double initialTemperature = 10000.0;
-	double coolingRate = 0.999;
-	double temperature = initialTemperature;
-	std::vector<Truck> bestSolution = currentSolution;
-	double bestCost = calculateFitness(bestSolution);
-	while (temperature > 1) {
-		std::vector<Truck> newSolution = generateNeighbor(currentSolution);
-		double newCost = calculateFitness(newSolution);
-		if (acceptanceProbability(bestCost, newCost, temperature) > static_cast<double>(rand()) / RAND_MAX) {
-			currentSolution = newSolution;
-			if (newCost < bestCost) {
-				bestSolution = newSolution;
-				bestCost = newCost;
-			}
-		}
-		temperature *= coolingRate;
-	}
-	setTrucks(bestSolution);
-	sumOfallRoutes = bestCost;
-}
-
-double AlgorithmSimulatedAnnealing::calculateFitness(const std::vector<Truck>& trucks) {
+double AlgorithmTabuSearch::calculateFitness(const std::vector<Truck>& trucks) {
 	double totalDistance = 0.0;
 	for (const auto& truck : trucks) {
 		totalDistance += truck.getRouteLength();
@@ -105,7 +127,7 @@ double AlgorithmSimulatedAnnealing::calculateFitness(const std::vector<Truck>& t
 	return totalDistance;
 }
 
-std::vector<Truck> AlgorithmSimulatedAnnealing::generateNeighbor(const std::vector<Truck>& currentSolution) {
+std::vector<Truck> AlgorithmTabuSearch::generateNeighbor(const std::vector<Truck>& currentSolution) {
 	std::vector<Truck> newSolution = currentSolution;
 
 	for (int i = 0; i < rand()%100; i++)
@@ -135,6 +157,7 @@ std::vector<Truck> AlgorithmSimulatedAnnealing::generateNeighbor(const std::vect
 			}
 		}
 		case 1: {
+			// zamieñ dwa punkty w ró¿nych ciê¿arówkach
 			int truckIndex1 = rand() % newSolution.size();
 			while (newSolution[truckIndex1].getRoute().size() < 3) {
 				truckIndex1 = rand() % newSolution.size();
@@ -252,13 +275,6 @@ std::vector<Truck> AlgorithmSimulatedAnnealing::generateNeighbor(const std::vect
 			break;
 		}
 	}
-	
-	return newSolution;
-}
 
-double AlgorithmSimulatedAnnealing::acceptanceProbability(double bestCost, double newCost, double temperature) {
-	if (newCost < bestCost) {
-		return 1.0;
-	}
-	return exp((bestCost - newCost) / temperature);
+	return newSolution;
 }

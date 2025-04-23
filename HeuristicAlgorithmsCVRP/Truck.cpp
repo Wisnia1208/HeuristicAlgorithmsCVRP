@@ -65,3 +65,26 @@ void Truck::convertVec2ToImVec2() {
 		route.push_back(imvec2);
 	}
 }
+
+void Truck::twoOpt() {
+	// Implementacja algorytmu 2-opt
+	int n = route.size();
+	if (n <= 2) return; // Jeœli trasa ma mniej ni¿ 3 punkty, nie mo¿na zastosowaæ 2-opt
+
+	for (int i = 1; i < n - 2; ++i) { // Rozpoczynamy od indeksu 1, koñczymy na n-2
+		for (int j = i + 1; j < n - 1; ++j) { // Koñczymy na n-1, aby nie zmieniaæ ostatniego indeksu
+			if (j - i == 1) continue; // Nie zamieniaj s¹siednich punktów
+			double delta = calculateDistance(route[i - 1], route[i]) +
+				calculateDistance(route[j], route[j + 1]) -
+				calculateDistance(route[i - 1], route[j]) -
+				calculateDistance(route[i], route[j + 1]);
+			if (delta < 0) {
+				std::reverse(route.begin() + i, route.begin() + j + 1);
+			}
+		}
+	}
+}
+
+double Truck::calculateDistance(const ImVec2& firstPoint, const ImVec2& secondPoint) const {
+	return std::sqrt(std::pow(firstPoint.x - secondPoint.x, 2) + std::pow(firstPoint.y - secondPoint.y, 2));
+}

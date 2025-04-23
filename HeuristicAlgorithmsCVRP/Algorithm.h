@@ -17,6 +17,7 @@ public:
 	std::vector<Truck> getTrucks() const;
 	double calculateDistance(const ImVec2 firstPoint, const ImVec2 secondPoint) const;
 	void twoOpt();
+	void twoOpt(std::vector<Truck>& trucks);
 	int getNodeDemand(int x, int y);
 	int getNodeDemand(ImVec2 node);
 };
