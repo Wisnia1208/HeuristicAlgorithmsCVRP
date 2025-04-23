@@ -80,3 +80,12 @@ void Algorithm::twoOpt() {
         }
     }
 }
+
+int Algorithm::getNodeDemand(int x, int y) {
+	for (const auto& node : nodes) {
+		if (node.getCoordinates().x == x && node.getCoordinates().y == y) {
+			return node.getDemand();
+		}
+	}
+	//return 0;
+}

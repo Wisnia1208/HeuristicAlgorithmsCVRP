@@ -142,16 +142,22 @@ std::vector<Truck> AlgorithmSimulatedAnnealing::generateNeighbor(const std::vect
 	}
 
 	if (newSolution[truckIndex1].getLoad() -
-		experiment.getNodeByCoordinates(newSolution[truckIndex2].getRoute()[nodeIndex2].x, newSolution[truckIndex2].getRoute()[nodeIndex2].y).getDemand() +
-		experiment.getNodeByCoordinates(newSolution[truckIndex1].getRoute()[nodeIndex1].x, newSolution[truckIndex1].getRoute()[nodeIndex1].y).getDemand() > 0
+		getNodeDemand(newSolution[truckIndex2].getRoute()[nodeIndex2].x, newSolution[truckIndex2].getRoute()[nodeIndex2].y) +
+		getNodeDemand(newSolution[truckIndex1].getRoute()[nodeIndex1].x, newSolution[truckIndex1].getRoute()[nodeIndex1].y) > 0
 		&&
 		newSolution[truckIndex2].getLoad() -
-		experiment.getNodeByCoordinates(newSolution[truckIndex1].getRoute()[nodeIndex1].x, newSolution[truckIndex1].getRoute()[nodeIndex1].y).getDemand() +
-		experiment.getNodeByCoordinates(newSolution[truckIndex2].getRoute()[nodeIndex2].x, newSolution[truckIndex2].getRoute()[nodeIndex2].y).getDemand() > 0)
+		getNodeDemand(newSolution[truckIndex1].getRoute()[nodeIndex1].x, newSolution[truckIndex1].getRoute()[nodeIndex1].y) +
+		getNodeDemand(newSolution[truckIndex2].getRoute()[nodeIndex2].x, newSolution[truckIndex2].getRoute()[nodeIndex2].y) > 0)
 	{
 		std::vector<ImVec2> tempRoute1 = newSolution[truckIndex1].getRoute();
 		std::vector<ImVec2> tempRoute2 = newSolution[truckIndex2].getRoute();
 		std::swap(tempRoute1[nodeIndex1], tempRoute2[nodeIndex2]);
+		newSolution[truckIndex1].setLoad(newSolution[truckIndex1].getLoad() -
+			getNodeDemand(tempRoute2[nodeIndex2].x, tempRoute2[nodeIndex2].y) +
+			getNodeDemand(tempRoute1[nodeIndex1].x, tempRoute1[nodeIndex1].y));
+		newSolution[truckIndex2].setLoad(newSolution[truckIndex2].getLoad() -
+			getNodeDemand(tempRoute1[nodeIndex1].x, tempRoute1[nodeIndex1].y) +
+			getNodeDemand(tempRoute2[nodeIndex2].x, tempRoute2[nodeIndex2].y));
 		newSolution[truckIndex1].setRoute(tempRoute1);
 		newSolution[truckIndex2].setRoute(tempRoute2);
 	}

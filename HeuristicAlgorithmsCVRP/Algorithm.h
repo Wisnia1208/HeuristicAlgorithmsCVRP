@@ -17,6 +17,6 @@ public:
 	std::vector<Truck> getTrucks() const;
 	double calculateDistance(const ImVec2 firstPoint, const ImVec2 secondPoint) const;
 	void twoOpt();
-	void swapNodes(int firstTruckIndex, int nodeIndexOfFirstTruck, int secondTruckIndex, int nodeIndexOfSecondTruck);
+	int getNodeDemand(int x, int y);
 };
 
