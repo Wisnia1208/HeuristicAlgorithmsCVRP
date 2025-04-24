@@ -24,4 +24,5 @@ public:
     void setDemand(int demand);
 	// Metody
     void deliver(Truck& truck);
+	void deliverWithSplit(Truck& truck);
 };

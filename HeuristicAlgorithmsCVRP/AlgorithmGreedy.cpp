@@ -34,7 +34,7 @@ void AlgorithmGreedy::solve() {
 
             // Jeœli znaleziono najbli¿szy wêze³, wykonaj dostawê
             if (closestNodeIndex != -1) {
-                nodes[closestNodeIndex].deliver(truck); // Dostarcz towar do wêz³a
+                nodes[closestNodeIndex].deliverWithSplit(truck); // Dostarcz towar do wêz³a
                 deliveryMade = true;
             }
         }
