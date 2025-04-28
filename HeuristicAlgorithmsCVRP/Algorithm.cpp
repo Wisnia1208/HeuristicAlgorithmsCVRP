@@ -98,3 +98,16 @@ int Algorithm::getNodeDemand(ImVec2 node) {
 	}
 	return 0;
 }
+
+void Algorithm::startTimer() {
+	startTime = std::chrono::high_resolution_clock::now();
+}
+
+void Algorithm::stopTimer() {
+	stopTime = std::chrono::high_resolution_clock::now();
+}
+
+double Algorithm::getElapsedTime() const {
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stopTime - startTime);
+    return static_cast<double>(duration.count()) / 1000.0; // Zwróæ czas w sekundach
+}

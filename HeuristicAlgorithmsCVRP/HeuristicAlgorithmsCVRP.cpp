@@ -291,221 +291,293 @@ int main() {
 
 		ImGui::End();
 
-		ImGui::Begin("Algorithms Panel", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+		// Deklaracja zmiennych dla różnic od optymalnej wartości
+		static double randomClientsDiff = 0.0f;
+		static double randomClients2OptDiff = 0.0f;
+		static double greedyDiff = 0.0f;
+		static double greedy2OptDiff = 0.0f;
+		static double clarkeWrightDiff = 0.0f;
+		static double clarkeWright2OptDiff = 0.0f;
+		static double simulatedAnnealingRandomClientsDiff = 0.0f;
+		static double simulatedAnnealingGreedyDiff = 0.0f;
+		static double simulatedAnnealingClarkeWrightDiff = 0.0f;
+		static double tabuSearchRandomClientsDiff = 0.0f;
+		static double tabuSearchGreedyDiff = 0.0f;
+		static double tabuSearchClarkeWrightDiff = 0.0f;
 
-		// Algorytm RandomClients
-		static double randomClientsDiff = 0.0f; // Przechowuje sumę ścieżek dla RandomClients
-		if (ImGui::Button("Run##RandomClients")) {
-			algorithmRandomClients.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
-			algorithmRandomClients.solve();
-			randomClientsDiff = algorithmRandomClients.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
-			algorithm.setTrucks(algorithmRandomClients.getTrucks());
-			drawTruckRoutes = true;
-		}
-		ImGui::SameLine();
-		ImGui::Text("Algorithm Random Clients");
-		ImGui::SameLine();
-		ImGui::InputDouble("##RandomClientsDiff", &randomClientsDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
-		ImGui::SameLine();
-		ImGui::Text("(difference from optimum)");
+		static double randomClientsExecTime = 0.0f;
+		static double randomClients2OptExecTime = 0.0f;
+		static double greedyExecTime = 0.0f;
+		static double greedy2OptExecTime = 0.0f;
+		static double clarkeWrightExecTime = 0.0f;
+		static double clarkeWright2OptExecTime = 0.0f;
+		static double simulatedAnnealingRandomClientsExecTime = 0.0f;
+		static double simulatedAnnealingGreedyExecTime = 0.0f;
+		static double simulatedAnnealingClarkeWrightExecTime = 0.0f;
+		static double tabuSearchRandomClientsExecTime = 0.0f;
+		static double tabuSearchGreedyExecTime = 0.0f;
+		static double tabuSearchClarkeWrightExecTime = 0.0f;
 
-		// Algorytm RandomClients 2-opt
-		static double randomClients2OptDiff = 0.0f; // Przechowuje sumę ścieżek dla RandomClients 2-opt
-		if (ImGui::Button("Run##RandomClients2Opt")) {
-			algorithmRandomClients.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
-			algorithmRandomClients.solve();
-			algorithmRandomClients.twoOpt(); // Uruchomienie algorytmu 2-opt
-			randomClients2OptDiff = algorithmRandomClients.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
-			algorithm.setTrucks(algorithmRandomClients.getTrucks());
-			drawTruckRoutes = true;
-		}
-		ImGui::SameLine();
-		ImGui::Text("Algorithm Random Clients 2-opt");
-		ImGui::SameLine();
-		ImGui::InputDouble("##RandomClients2OptDiff", &randomClients2OptDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
-		ImGui::SameLine();
-		ImGui::Text("(difference from optimum)");
+        ImGui::Begin("Algorithms Panel", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
-		// Algorytm Greedy
-		static double greedyDiff = 0.0f; // Przechowuje sumę ścieżek dla Greedy
-		if (ImGui::Button("Run##Greedy")) {
-			algorithmGreedy.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());;
-			algorithmGreedy.solve();
-			greedyDiff = algorithmGreedy.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
-			algorithm.setTrucks(algorithmGreedy.getTrucks());
-			drawTruckRoutes = true;
-		}
-		ImGui::SameLine();
-		ImGui::Text("Algorithm Greedy");
-		ImGui::SameLine();
-		ImGui::InputDouble("##GreedyDiff", &greedyDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
-		ImGui::SameLine();
-		ImGui::Text("(difference from optimum)");
+        if (ImGui::BeginTable("AlgorithmsTable", 4, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
+            ImGui::TableSetupColumn("Algorithm", ImGuiTableColumnFlags_WidthStretch);
+            ImGui::TableSetupColumn("Difference from Optimum", ImGuiTableColumnFlags_WidthStretch);
+            ImGui::TableSetupColumn("Time (s)", ImGuiTableColumnFlags_WidthStretch);
+            ImGui::TableSetupColumn("Action", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableHeadersRow();
 
-		// Algorytm Greedy 2-opt
-		static double greedy2OptDiff = 0.0f; // Przechowuje sumę ścieżek dla Greedy 2-opt
-		if (ImGui::Button("Run##Greedy2Opt")) {
-			algorithmGreedy.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
-			algorithmGreedy.solve();
-			algorithmGreedy.twoOpt(); // Uruchomienie algorytmu 2-opt
-			greedy2OptDiff = algorithmGreedy.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
-			algorithm.setTrucks(algorithmGreedy.getTrucks());
-			drawTruckRoutes = true;
-		}
-		ImGui::SameLine();
-		ImGui::Text("Algorithm Greedy 2-opt");
-		ImGui::SameLine();
-		ImGui::InputDouble("##Greedy2OptDiff", &greedy2OptDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
-		ImGui::SameLine();
-		ImGui::Text("(difference from optimum)");
+            // Algorytm RandomClients
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("Random Clients");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("%.2f", randomClientsDiff);
+            ImGui::TableSetColumnIndex(2);
+            ImGui::Text("%.3f", randomClientsExecTime);
+            ImGui::TableSetColumnIndex(3);
+            if (ImGui::Button("Run##RandomClients")) {
+                algorithmRandomClients.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+                algorithmRandomClients.startTimer();
+                algorithmRandomClients.solve();
+                algorithmRandomClients.stopTimer();
+                randomClientsExecTime = algorithmRandomClients.getElapsedTime();
+                randomClientsDiff = algorithmRandomClients.getSumOfRoutes() - experiment.getOptimalValue();
+                algorithm.setTrucks(algorithmRandomClients.getTrucks());
+                drawTruckRoutes = true;
+            }
 
-		// Algorytm Clarke-Wright
-		static double clarkeWrightDiff = 0.0f; // Przechowuje sumę ścieżek dla Clarke-Wright
-		if (ImGui::Button("Run##ClarkeWright")) {
-			algorithmClarkeWright.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
-			algorithmClarkeWright.solve();
-			clarkeWrightDiff = algorithmClarkeWright.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
-			algorithm.setTrucks(algorithmClarkeWright.getTrucks());
-			drawTruckRoutes = true;
-		}
-		ImGui::SameLine();
-		ImGui::Text("Algorithm Clarke-Wright");
-		ImGui::SameLine();
-		ImGui::InputDouble("##ClarkeWrightDiff", &clarkeWrightDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
-		ImGui::SameLine();
-		ImGui::Text("(difference from optimum)");
+            // Algorytm RandomClients 2-opt
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("Random Clients 2-opt");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("%.2f", randomClients2OptDiff);
+            ImGui::TableSetColumnIndex(2);
+            ImGui::Text("%.3f", randomClients2OptExecTime);
+            ImGui::TableSetColumnIndex(3);
+            if (ImGui::Button("Run##RandomClients2Opt")) {
+                algorithmRandomClients.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+                algorithmRandomClients.startTimer();
+                algorithmRandomClients.solve();
+                algorithmRandomClients.twoOpt();
+                algorithmRandomClients.stopTimer();
+                randomClients2OptExecTime = algorithmRandomClients.getElapsedTime();
+                randomClients2OptDiff = algorithmRandomClients.getSumOfRoutes() - experiment.getOptimalValue();
+                algorithm.setTrucks(algorithmRandomClients.getTrucks());
+                drawTruckRoutes = true;
+            }
 
-		// Algorytm Clarke-Wright 2-opt
-		static double clarkeWright2OptDiff = 0.0f; // Przechowuje sumę ścieżek dla Clarke-Wright 2-opt
-		if (ImGui::Button("Run##ClarkeWright2Opt")) {
-			algorithmClarkeWright.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
-			algorithmClarkeWright.solve();
-			algorithmClarkeWright.twoOpt(); // Uruchomienie algorytmu 2-opt
-			clarkeWright2OptDiff = algorithmClarkeWright.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
-			algorithm.setTrucks(algorithmClarkeWright.getTrucks());
-			drawTruckRoutes = true;
-		}
-		ImGui::SameLine();
-		ImGui::Text("Algorithm Clarke-Wright 2-opt");
-		ImGui::SameLine();
-		ImGui::InputDouble("##ClarkeWright2OptDiff", &clarkeWright2OptDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
-		ImGui::SameLine();
-		ImGui::Text("(difference from optimum)");
+            // Algorytm Greedy
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("Greedy");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("%.2f", greedyDiff);
+            ImGui::TableSetColumnIndex(2);
+            ImGui::Text("%.3f", greedyExecTime);
+            ImGui::TableSetColumnIndex(3);
+            if (ImGui::Button("Run##Greedy")) {
+                algorithmGreedy.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+                algorithmGreedy.startTimer();
+                algorithmGreedy.solve();
+                algorithmGreedy.stopTimer();
+                greedyExecTime = algorithmGreedy.getElapsedTime();
+                greedyDiff = algorithmGreedy.getSumOfRoutes() - experiment.getOptimalValue();
+                algorithm.setTrucks(algorithmGreedy.getTrucks());
+                drawTruckRoutes = true;
+            }
 
-		// Algorytm Simulated Annealing with Random Clients
-		static double simulatedAnnealingRandomClientsDiff = 0.0f; // Przechowuje sumę ścieżek dla Simulated Annealing with Random Clients
-		if (ImGui::Button("Run##SimulatedAnnealingRandomClients")) {
-			algorithmSimulatedAnnealing.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
-			algorithmSimulatedAnnealing.setExperiment(experiment);
-			algorithmSimulatedAnnealing.solveStartingWithRandomClientsAlgorithm();
-			simulatedAnnealingRandomClientsDiff = algorithmSimulatedAnnealing.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
-			algorithm.setTrucks(algorithmSimulatedAnnealing.getTrucks());
-			drawTruckRoutes = true;
-		}
-		ImGui::SameLine();
-		ImGui::Text("Algorithm Simulated Annealing with Random Clients");
-		ImGui::SameLine();
-		ImGui::InputDouble("##SimulatedAnnealingRandomClientsDiff", &simulatedAnnealingRandomClientsDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
-		ImGui::SameLine();
-		ImGui::Text("(difference from optimum)");
+            // Algorytm Greedy 2-opt
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("Greedy 2-opt");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("%.2f", greedy2OptDiff);
+            ImGui::TableSetColumnIndex(2);
+            ImGui::Text("%.3f", greedy2OptExecTime);
+            ImGui::TableSetColumnIndex(3);
+            if (ImGui::Button("Run##Greedy2Opt")) {
+                algorithmGreedy.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+                algorithmGreedy.startTimer();
+                algorithmGreedy.solve();
+                algorithmGreedy.twoOpt();
+                algorithmGreedy.stopTimer();
+                greedy2OptExecTime = algorithmGreedy.getElapsedTime();
+                greedy2OptDiff = algorithmGreedy.getSumOfRoutes() - experiment.getOptimalValue();
+                algorithm.setTrucks(algorithmGreedy.getTrucks());
+                drawTruckRoutes = true;
+            }
 
-		// Algorytm Simulated Annealing with Greedy
-		static double simulatedAnnealingGreedyDiff = 0.0f; // Przechowuje sumę ścieżek dla Simulated Annealing with Greedy
-		if (ImGui::Button("Run##SimulatedAnnealingGreedy")) {
-			algorithmSimulatedAnnealing.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
-			//algorithmSimulatedAnnealing.set(experiment.getNodes(), algorithmRandomClients.getTrucks(), experiment.getDepot());
-			algorithmSimulatedAnnealing.setExperiment(experiment);
-			algorithmSimulatedAnnealing.solveStartingWithGreedyAlgorithm();
-			simulatedAnnealingGreedyDiff = algorithmSimulatedAnnealing.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
-			algorithm.setTrucks(algorithmSimulatedAnnealing.getTrucks());
-			drawTruckRoutes = true;
-		}
-		ImGui::SameLine();
-		ImGui::Text("Algorithm Simulated Annealing with Greedy");
-		ImGui::SameLine();
-		ImGui::InputDouble("##SimulatedAnnealingGreedyDiff", &simulatedAnnealingGreedyDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
-		ImGui::SameLine();
-		ImGui::Text("(difference from optimum)");
+            // Algorytm Clarke-Wright
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("Clarke-Wright");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("%.2f", clarkeWrightDiff);
+            ImGui::TableSetColumnIndex(2);
+            ImGui::Text("%.3f", clarkeWrightExecTime);
+            ImGui::TableSetColumnIndex(3);
+            if (ImGui::Button("Run##ClarkeWright")) {
+                algorithmClarkeWright.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+                algorithmClarkeWright.startTimer();
+                algorithmClarkeWright.solve();
+                algorithmClarkeWright.stopTimer();
+                clarkeWrightExecTime = algorithmClarkeWright.getElapsedTime();
+                clarkeWrightDiff = algorithmClarkeWright.getSumOfRoutes() - experiment.getOptimalValue();
+                algorithm.setTrucks(algorithmClarkeWright.getTrucks());
+                drawTruckRoutes = true;
+            }
 
-		// Algorytm Simulated Annealing with Clarke-Wright
-		static double simulatedAnnealingClarkeWrightDiff = 0.0f; // Przechowuje sumę ścieżek dla Simulated Annealing with Clarke-Wright
-		if (ImGui::Button("Run##SimulatedAnnealingClarkeWright")) {
-			algorithmSimulatedAnnealing.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
-			algorithmSimulatedAnnealing.setExperiment(experiment);
-			algorithmSimulatedAnnealing.solveStartingWithClarkeWrightAlgorithm();
-			simulatedAnnealingClarkeWrightDiff = algorithmSimulatedAnnealing.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
-			algorithm.setTrucks(algorithmSimulatedAnnealing.getTrucks());
-			drawTruckRoutes = true;
-		}
-		ImGui::SameLine();
-		ImGui::Text("Algorithm Simulated Annealing with Clarke-Wright");
-		ImGui::SameLine();
-		ImGui::InputDouble("##SimulatedAnnealingClarkeWrightDiff", &simulatedAnnealingClarkeWrightDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
-		ImGui::SameLine();
-		ImGui::Text("(difference from optimum)");
+            // Algorytm Clarke-Wright 2-opt
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("Clarke-Wright 2-opt");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("%.2f", clarkeWright2OptDiff);
+            ImGui::TableSetColumnIndex(2);
+            ImGui::Text("%.3f", clarkeWright2OptExecTime);
+            ImGui::TableSetColumnIndex(3);
+            if (ImGui::Button("Run##ClarkeWright2Opt")) {
+                algorithmClarkeWright.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+                algorithmClarkeWright.startTimer();
+                algorithmClarkeWright.solve();
+                algorithmClarkeWright.twoOpt();
+                algorithmClarkeWright.stopTimer();
+                clarkeWright2OptExecTime = algorithmClarkeWright.getElapsedTime();
+                clarkeWright2OptDiff = algorithmClarkeWright.getSumOfRoutes() - experiment.getOptimalValue();
+                algorithm.setTrucks(algorithmClarkeWright.getTrucks());
+                drawTruckRoutes = true;
+            }
 
-		// Algorytm Tabu Search with Random Clients
-		static double tabuSearchRandomClientsDiff = 0.0f; // Przechowuje sumę ścieżek dla Tabu Search with Random Clients
-		if (ImGui::Button("Run##TabuSearchRandomClients")) {
-			algorithmTabuSearch.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
-			algorithmTabuSearch.solveStartingWithRandomClientAlgorithm();
-			tabuSearchRandomClientsDiff = algorithmTabuSearch.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
-			algorithm.setTrucks(algorithmTabuSearch.getTrucks());
-			drawTruckRoutes = true;
-		}
-		ImGui::SameLine();
-		ImGui::Text("Algorithm Tabu Search with Random Clients");
-		ImGui::SameLine();
-		ImGui::InputDouble("##TabuSearchRandomClientsDiff", &tabuSearchRandomClientsDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
-		ImGui::SameLine();
-		ImGui::Text("(difference from optimum)");
+            // Algorytm Simulated Annealing with Random Clients
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("Simulated Annealing (Random Clients)");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("%.2f", simulatedAnnealingRandomClientsDiff);
+            ImGui::TableSetColumnIndex(2);
+            ImGui::Text("%.3f", simulatedAnnealingRandomClientsExecTime);
+            ImGui::TableSetColumnIndex(3);
+            if (ImGui::Button("Run##SimulatedAnnealingRandomClients")) {
+                algorithmSimulatedAnnealing.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+                algorithmSimulatedAnnealing.setExperiment(experiment);
+                algorithmSimulatedAnnealing.startTimer();
+                algorithmSimulatedAnnealing.solveStartingWithRandomClientsAlgorithm();
+                algorithmSimulatedAnnealing.stopTimer();
+                simulatedAnnealingRandomClientsExecTime = algorithmSimulatedAnnealing.getElapsedTime();
+                simulatedAnnealingRandomClientsDiff = algorithmSimulatedAnnealing.getSumOfRoutes() - experiment.getOptimalValue();
+                algorithm.setTrucks(algorithmSimulatedAnnealing.getTrucks());
+                drawTruckRoutes = true;
+            }
 
-		// Algorytm Tabu Search with Greedy
-		static double tabuSearchGreedyDiff = 0.0f; // Przechowuje sumę ścieżek dla Tabu Search with Greedy
-		if (ImGui::Button("Run##TabuSearchGreedy")) {
-			algorithmTabuSearch.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
-			algorithmTabuSearch.solveStartingWithGreedyAlgorithm();
-			tabuSearchGreedyDiff = algorithmTabuSearch.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
-			algorithm.setTrucks(algorithmTabuSearch.getTrucks());
-			drawTruckRoutes = true;
-		}
-		ImGui::SameLine();
-		ImGui::Text("Algorithm Tabu Search with Greedy");
-		ImGui::SameLine();
-		ImGui::InputDouble("##TabuSearchGreedyDiff", &tabuSearchGreedyDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
-		ImGui::SameLine();
-		ImGui::Text("(difference from optimum)");
+            // Algorytm Simulated Annealing with Greedy
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("Simulated Annealing (Greedy)");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("%.2f", simulatedAnnealingGreedyDiff);
+            ImGui::TableSetColumnIndex(2);
+            ImGui::Text("%.3f", simulatedAnnealingGreedyExecTime);
+            ImGui::TableSetColumnIndex(3);
+            if (ImGui::Button("Run##SimulatedAnnealingGreedy")) {
+                algorithmSimulatedAnnealing.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+                algorithmSimulatedAnnealing.setExperiment(experiment);
+                algorithmSimulatedAnnealing.startTimer();
+                algorithmSimulatedAnnealing.solveStartingWithGreedyAlgorithm();
+                algorithmSimulatedAnnealing.stopTimer();
+                simulatedAnnealingGreedyExecTime = algorithmSimulatedAnnealing.getElapsedTime();
+                simulatedAnnealingGreedyDiff = algorithmSimulatedAnnealing.getSumOfRoutes() - experiment.getOptimalValue();
+                algorithm.setTrucks(algorithmSimulatedAnnealing.getTrucks());
+                drawTruckRoutes = true;
+            }
 
-		// Algorytm Tabu Search with Clarke-Wright
-		static double tabuSearchClarkeWrightDiff = 0.0f; // Przechowuje sumę ścieżek dla Tabu Search with Clarke-Wright
-		if (ImGui::Button("Run##TabuSearchClarkeWright")) {
-			algorithmTabuSearch.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
-			algorithmTabuSearch.solveStartingWithClarkeWrightAlgorithm();
-			tabuSearchClarkeWrightDiff = algorithmTabuSearch.getSumOfRoutes() - experiment.getOptimalValue(); // Pobranie sumy ścieżek
-			algorithm.setTrucks(algorithmTabuSearch.getTrucks());
-			drawTruckRoutes = true;
-		}
-		ImGui::SameLine();
-		ImGui::Text("Algorithm Tabu Search with Clarke-Wright");
-		ImGui::SameLine();
-		ImGui::InputDouble("##TabuSearchClarkeWrightDiff", &tabuSearchClarkeWrightDiff, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
-		ImGui::SameLine();
-		ImGui::Text("(difference from optimum)");
+            // Algorytm Simulated Annealing with Clarke-Wright
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("Simulated Annealing (Clarke-Wright)");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("%.2f", simulatedAnnealingClarkeWrightDiff);
+            ImGui::TableSetColumnIndex(2);
+            ImGui::Text("%.3f", simulatedAnnealingClarkeWrightExecTime);
+            ImGui::TableSetColumnIndex(3);
+            if (ImGui::Button("Run##SimulatedAnnealingClarkeWright")) {
+                algorithmSimulatedAnnealing.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+                algorithmSimulatedAnnealing.setExperiment(experiment);
+                algorithmSimulatedAnnealing.startTimer();
+                algorithmSimulatedAnnealing.solveStartingWithClarkeWrightAlgorithm();
+                algorithmSimulatedAnnealing.stopTimer();
+                simulatedAnnealingClarkeWrightExecTime = algorithmSimulatedAnnealing.getElapsedTime();
+                simulatedAnnealingClarkeWrightDiff = algorithmSimulatedAnnealing.getSumOfRoutes() - experiment.getOptimalValue();
+                algorithm.setTrucks(algorithmSimulatedAnnealing.getTrucks());
+                drawTruckRoutes = true;
+            }
 
-		// Dummy algorytm
-		static double dummySum = 0.0f; // Przechowuje sumę ścieżek dla dummy algorytmu
-		if (ImGui::Button("Run##Dummy")) {
-			// Tutaj można dodać logikę dla dummy algorytmu
-			dummySum = 0.0f; // Przykładowa wartość
-		}
-		ImGui::SameLine();
-		ImGui::Text("Dummy Algorithm");
-		ImGui::SameLine();
-		ImGui::InputDouble("##dummysum", &dummySum, 0.0, 0.0, "%.2f", ImGuiInputTextFlags_ReadOnly);
-		ImGui::SameLine();
-		ImGui::Text("(difference from optimum)");
+            // Algorytm Tabu Search with Random Clients
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("Tabu Search (Random Clients)");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("%.2f", tabuSearchRandomClientsDiff);
+            ImGui::TableSetColumnIndex(2);
+            ImGui::Text("%.3f", tabuSearchRandomClientsExecTime);
+            ImGui::TableSetColumnIndex(3);
+            if (ImGui::Button("Run##TabuSearchRandomClients")) {
+                algorithmTabuSearch.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+                algorithmTabuSearch.startTimer();
+                algorithmTabuSearch.solveStartingWithRandomClientAlgorithm();
+                algorithmTabuSearch.stopTimer();
+                tabuSearchRandomClientsExecTime = algorithmTabuSearch.getElapsedTime();
+                tabuSearchRandomClientsDiff = algorithmTabuSearch.getSumOfRoutes() - experiment.getOptimalValue();
+                algorithm.setTrucks(algorithmTabuSearch.getTrucks());
+                drawTruckRoutes = true;
+            }
 
-		ImGui::End();
+            // Algorytm Tabu Search with Greedy
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("Tabu Search (Greedy)");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("%.2f", tabuSearchGreedyDiff);
+            ImGui::TableSetColumnIndex(2);
+            ImGui::Text("%.3f", tabuSearchGreedyExecTime);
+            ImGui::TableSetColumnIndex(3);
+            if (ImGui::Button("Run##TabuSearchGreedy")) {
+                algorithmTabuSearch.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+                algorithmTabuSearch.startTimer();
+                algorithmTabuSearch.solveStartingWithGreedyAlgorithm();
+                algorithmTabuSearch.stopTimer();
+                tabuSearchGreedyExecTime = algorithmTabuSearch.getElapsedTime();
+                tabuSearchGreedyDiff = algorithmTabuSearch.getSumOfRoutes() - experiment.getOptimalValue();
+                algorithm.setTrucks(algorithmTabuSearch.getTrucks());
+                drawTruckRoutes = true;
+            }
+
+            // Algorytm Tabu Search with Clarke-Wright
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("Tabu Search (Clarke-Wright)");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("%.2f", tabuSearchClarkeWrightDiff);
+            ImGui::TableSetColumnIndex(2);
+            ImGui::Text("%.3f", tabuSearchClarkeWrightExecTime);
+            ImGui::TableSetColumnIndex(3);
+            if (ImGui::Button("Run##TabuSearchClarkeWright")) {
+                algorithmTabuSearch.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+                algorithmTabuSearch.startTimer();
+                algorithmTabuSearch.solveStartingWithClarkeWrightAlgorithm();
+                algorithmTabuSearch.stopTimer();
+                tabuSearchClarkeWrightExecTime = algorithmTabuSearch.getElapsedTime();
+                tabuSearchClarkeWrightDiff = algorithmTabuSearch.getSumOfRoutes() - experiment.getOptimalValue();
+                algorithm.setTrucks(algorithmTabuSearch.getTrucks());
+                drawTruckRoutes = true;
+            }
+
+            ImGui::EndTable();
+        }
+
+        ImGui::End();
+
 
 		// Renderowanie
 		ImGui::Render();
