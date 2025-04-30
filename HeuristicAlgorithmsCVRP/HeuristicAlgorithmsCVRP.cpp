@@ -9,6 +9,7 @@
 #include "AlgorithmClarkeWright.h"
 #include "AlgorithmSimulatedAnnealing.h"
 #include "AlgorithmTabuSearch.h"
+#include "AlgorithmAntColonyOptimization.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -168,6 +169,7 @@ int main() {
 	AlgorithmClarkeWright algorithmClarkeWright;
 	AlgorithmSimulatedAnnealing algorithmSimulatedAnnealing;
 	AlgorithmTabuSearch algorithmTabuSearch;
+	AlgorithmAntColonyOptimization algorithmAntColonyOptimization;
 	bool drawTruckRoutes = false; // Flaga kontrolująca rysowanie tras
 	//bool isFileLoaded = false; // Flaga informująca, czy plik został wczytany
 
@@ -304,6 +306,8 @@ int main() {
 		static double tabuSearchRandomClientsDiff = 0.0f;
 		static double tabuSearchGreedyDiff = 0.0f;
 		static double tabuSearchClarkeWrightDiff = 0.0f;
+		static double antColonyOptimizationDiff = 0.0f;
+		static double antColonyOptimization2optDiff = 0.0f;
 
 		static double randomClientsExecTime = 0.0f;
 		static double randomClients2OptExecTime = 0.0f;
@@ -317,6 +321,8 @@ int main() {
 		static double tabuSearchRandomClientsExecTime = 0.0f;
 		static double tabuSearchGreedyExecTime = 0.0f;
 		static double tabuSearchClarkeWrightExecTime = 0.0f;
+		static double antColonyOptimizationExecTime = 0.0f;
+		static double antColonyOptimization2optExecTime = 0.0f;
 
         ImGui::Begin("Algorithms Panel", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
@@ -572,6 +578,45 @@ int main() {
                 algorithm.setTrucks(algorithmTabuSearch.getTrucks());
                 drawTruckRoutes = true;
             }
+
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+            ImGui::Text("Ant Colony Optimization");
+			ImGui::TableSetColumnIndex(1);
+			ImGui::Text("%.2f", antColonyOptimizationDiff);
+			ImGui::TableSetColumnIndex(2);
+			ImGui::Text("%.3f", antColonyOptimizationExecTime);
+			ImGui::TableSetColumnIndex(3);
+			if (ImGui::Button("Run##AntColonyOptimization")) {
+				algorithmAntColonyOptimization.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+				algorithmAntColonyOptimization.startTimer();
+				algorithmAntColonyOptimization.solve();
+				algorithmAntColonyOptimization.stopTimer();
+				antColonyOptimizationExecTime = algorithmAntColonyOptimization.getElapsedTime();
+				antColonyOptimizationDiff = algorithmAntColonyOptimization.getSumOfRoutes() - experiment.getOptimalValue();
+				algorithm.setTrucks(algorithmAntColonyOptimization.getTrucks());
+				drawTruckRoutes = true;
+			}
+
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("Ant Colony Optimization 2-opt");
+			ImGui::TableSetColumnIndex(1);
+			ImGui::Text("%.2f", antColonyOptimization2optDiff);
+			ImGui::TableSetColumnIndex(2);
+			ImGui::Text("%.3f", antColonyOptimization2optExecTime);
+			ImGui::TableSetColumnIndex(3);
+			if (ImGui::Button("Run##AntColonyOptimization2opt")) {
+				algorithmAntColonyOptimization.set(experiment.getNodes(), experiment.getTrucks(), experiment.getDepot());
+				algorithmAntColonyOptimization.startTimer();
+				algorithmAntColonyOptimization.solve();
+				algorithmAntColonyOptimization.twoOpt();
+				algorithmAntColonyOptimization.stopTimer();
+				antColonyOptimization2optExecTime = algorithmAntColonyOptimization.getElapsedTime();
+				antColonyOptimization2optDiff = algorithmAntColonyOptimization.getSumOfRoutes() - experiment.getOptimalValue();
+				algorithm.setTrucks(algorithmAntColonyOptimization.getTrucks());
+				drawTruckRoutes = true;
+			}
 
             ImGui::EndTable();
         }

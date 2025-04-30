@@ -136,6 +136,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Algorithm.cpp" />
+    <ClCompile Include="AlgorithmAntColonyOptimization.cpp" />
     <ClCompile Include="AlgorithmClarkeWright.cpp" />
     <ClCompile Include="AlgorithmGreedy.cpp" />
     <ClCompile Include="AlgorithmRandomClients.cpp" />
@@ -158,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm.h" />
+    <ClInclude Include="AlgorithmAntColonyOptimization.h" />
     <ClInclude Include="AlgorithmClarkeWright.h" />
     <ClInclude Include="AlgorithmGreedy.h" />
     <ClInclude Include="AlgorithmRandomClients.h" />
