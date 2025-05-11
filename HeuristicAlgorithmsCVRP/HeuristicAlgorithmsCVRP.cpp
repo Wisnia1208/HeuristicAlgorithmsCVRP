@@ -191,7 +191,7 @@ int main() {
 		ImGui::NewFrame();
 
 		// Okno GUI
-		ImGui::Begin("Panel Sterowania", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+		ImGui::Begin("Control Panel", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
 		// Drop-down box z listą plików
 		if (ImGui::BeginCombo("Wybierz plik", selectedFileIndex >= 0 ? vrpFiles[selectedFileIndex].c_str() : "Brak wybranego pliku")) {
@@ -235,10 +235,10 @@ int main() {
 			}
 		}
 
-		ImGui::SameLine();
-		if (ImGui::Button("Run all experiments")) {
-			//todo
-		}
+		//ImGui::SameLine();
+		//if (ImGui::Button("Run all experiments")) {
+		//	//todo
+		//}
 
 		ImGui::End();
 
