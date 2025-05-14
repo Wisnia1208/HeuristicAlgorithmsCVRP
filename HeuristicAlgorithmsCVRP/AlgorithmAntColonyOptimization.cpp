@@ -4,8 +4,8 @@ AlgorithmAntColonyOptimization::AlgorithmAntColonyOptimization() {}
 
 void AlgorithmAntColonyOptimization::solve() {
     // Parametry algorytmu ACO domyœlne
-    const int numAnts = 50; // Liczba mrówek
-    const int numIterations = 100; // Liczba iteracji
+    const int numAnts = 10; // Liczba mrówek
+    const int numIterations = 50; // Liczba iteracji
     const double alpha = 1.0; // Waga feromonów
     const double beta = 2.0; // Waga heurystyki
     const double evaporationRate = 0.5; // Wspó³czynnik parowania feromonów
