@@ -362,3 +362,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /HeuristicAlgorithmsCVRP/input_files
+/HeuristicAlgorithmsCVRP/SACW.txt
+/HeuristicAlgorithmsCVRP/SAGR.txt
+/HeuristicAlgorithmsCVRP/SARC.txt
